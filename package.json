@@ -1,0 +1,12 @@
+{
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "pm2 start server.js"
+  },
+  "author": "IamNanjo",
+  "license": "Unlicense",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
