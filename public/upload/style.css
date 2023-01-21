@@ -48,7 +48,7 @@ code {
 #fileList {
     position: relative;
     margin: 2em 0;
-    border: 1px dotted gray;
+    border: 1px dashed #6c757d;
     border-radius: 0.125em;
     min-height: 10em;
     max-height: 20em;
