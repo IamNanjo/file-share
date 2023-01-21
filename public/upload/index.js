@@ -88,7 +88,6 @@ uploadBtn.onclick = () => {
 	ajax.addEventListener("abort", abortHandler, false);
 	ajax.open("POST", window.location);
 	ajax.send(formdata);
-	console.log("window.location :>> ", window.location);
 };
 
 function progressHandler(e) {
@@ -102,16 +101,16 @@ function setProgress(num) {
 }
 
 function completeHandler(e) {
-	const files = JSON.parse(e.target.responseText)["files"];
+	// const files = JSON.parse(e.target.responseText)["files"];
 	
-	for (let i = 0, len = files.length; i < len; i++) {
-		const el = document.createElement("li");
-		const aEl = document.createElement("a");
+	// for (let i = 0, len = files.length; i < len; i++) {
+	// 	const el = document.createElement("li");
+	// 	const aEl = document.createElement("a");
 
-		aEl.innerText = files[i];
+	// 	aEl.innerText = files[i];
 
-		el.appendChild(aEl);
-	}
+	// 	el.appendChild(aEl);
+	// }
 }
 
 function errorHandler(e) {
