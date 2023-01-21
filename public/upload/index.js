@@ -81,7 +81,7 @@ uploadBtn.onclick = () => {
 	setProgress(0);
 
 	const ajax = new XMLHttpRequest();
-	ajax.setRequestHeader("Authorization", "Basic " + )
+	// ajax.setRequestHeader("Authorization", "Basic " + )
 	ajax.upload.addEventListener("progress", progressHandler, false);
 	ajax.addEventListener("load", completeHandler, false);
 	ajax.addEventListener("error", errorHandler, false);
