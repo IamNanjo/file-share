@@ -23,7 +23,6 @@ fileList.ondrag = (e) => {
 
 fileList.ondrop = (e) => {
 	fileHover.style.display = "none";
-	console.log("fileList :>> ", e);
 	addFile({ name: "File", size: 4096 });
 };
 
@@ -73,7 +72,6 @@ uploadBtn.onclick = () => {
 
 	for (let i = 0, len = files.length; i < len; i++) {
 		const file = fileList.children[i];
-		console.log("file :>> ", file);
 
 		formdata.append(files[i].name, files[i], files[i].name);
 	}
