@@ -2,6 +2,7 @@ const { createServer } = require("https");
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
+const { readFileSync } = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
 
@@ -22,8 +23,8 @@ let server;
 if (isProduction) {
 	server = createServer(
 		{
-			key: process.env.SSL_KEY_PATH,
-			cert: process.env.SSL_CERT_PATH
+			key: readFileSync(process.env.SSL_KEY_PATH),
+			cert: readFileSync(process.env.SSL_CERT_PATH)
 		},
 		app
 	);
