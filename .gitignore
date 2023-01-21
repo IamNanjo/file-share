@@ -1,3 +1,5 @@
 .vscode
 node_modules
 files
+
+pm2-config.json
