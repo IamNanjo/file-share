@@ -4,8 +4,6 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
-const dotenv = require("dotenv");
-dotenv.config();
 
 const app = express();
 
