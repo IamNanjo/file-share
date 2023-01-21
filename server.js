@@ -1,8 +1,8 @@
 const { createServer } = require("https");
+const { readFileSync } = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
-const { readFileSync } = require("fs");
 const path = require("path");
 const bcrypt = require("bcrypt");
 
