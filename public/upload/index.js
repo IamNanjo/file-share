@@ -35,6 +35,7 @@ fileInput.onchange = (e) => {
 };
 
 clearListBtn.onclick = (e) => {
+	setProgress(0);
 	files = [];
 	fileInput.value = "";
 
@@ -68,6 +69,7 @@ function addFile(file) {
 }
 
 uploadBtn.onclick = () => {
+	uploadBtn.disabled = true;
 	const formdata = new FormData();
 
 	for (let i = 0, len = files.length; i < len; i++) {
@@ -99,16 +101,23 @@ function setProgress(num) {
 }
 
 function completeHandler(e) {
-	// const files = JSON.parse(e.target.responseText)["files"];
-	
-	// for (let i = 0, len = files.length; i < len; i++) {
-	// 	const el = document.createElement("li");
-	// 	const aEl = document.createElement("a");
+	console.log("Completed upload");
+	uploadBtn.disabled = false;
 
-	// 	aEl.innerText = files[i];
+	for (let i = 0, len = files.length; i < len; i++) {
+		addUrl(files[i].name);
+	}
 
-	// 	el.appendChild(aEl);
-	// }
+	files = [];
+	fileInput.value = "";
+
+	while (fileList.firstChild) {
+		fileList.removeChild(fileList.lastChild);
+	}
+
+	setTimeout(() => {
+		setProgress(0);
+	}, 2000);
 }
 
 function errorHandler(e) {
@@ -140,4 +149,39 @@ function humanReadableFilesize(bytes) {
 	);
 
 	return bytes.toFixed(dp) + " " + units[u];
+}
+
+function addUrl(filename) {
+	const li = document.createElement("li");
+	const aEl = document.createElement("a");
+	const copyBtn = document.createElement("button");
+	const copyBtnImg = document.createElement("img");
+
+	li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+	copyBtn.classList.add("btn", "btn-primary", "mx-2");
+
+	const linkURL = `${window.location.origin}/files/${filename}`;
+
+	aEl.href = linkURL;
+	aEl.target = "_blank";
+	aEl.innerText = filename;
+
+	copyBtnImg.src = "/assets/copy.svg";
+
+	copyBtn.onclick = (e) => {
+		navigator.clipboard.writeText(linkURL);
+
+		copyBtn.classList.replace("btn-primary", "btn-success");
+		copyBtnImg.src = `${window.location.origin}/assets/done.svg`;
+
+		setTimeout(() => {
+			copyBtn.classList.replace("btn-success", "btn-primary");
+			copyBtnImg.src = `${window.location.origin}/assets/copy.svg`;
+		}, 1500);
+	};
+
+	li.appendChild(aEl);
+	copyBtn.appendChild(copyBtnImg);
+	li.appendChild(copyBtn);
+	url.appendChild(li);
 }
