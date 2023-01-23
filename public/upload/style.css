@@ -66,8 +66,6 @@ code {
     align-items: center;
 }
 
-#fileList 
-
 #fileHover {
     display: none;
     background-color: #2c2f3a;
@@ -83,6 +81,7 @@ code {
 main {
     width: 90%;
     margin: 2em auto;
+    max-width: 960px;
 }
 
 @media only screen and (min-width: 600px) {
