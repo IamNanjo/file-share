@@ -14,16 +14,24 @@ let files = [];
 window.ondrop = (e) => e.preventDefault();
 
 fileList.ondragover = (e) => {
+	e.preventDefault();
 	fileHover.style.display = "flex";
 };
 
-fileList.ondrag = (e) => {
+fileList.ondrop = (e) => {
+	e.preventDefault();
 	fileHover.style.display = "none";
+
+	const f = e.dataTransfer.files;
+
+	for (let i = 0, len = f.length; i < len; i++) {
+		addFile(f[i]);
+	}
 };
 
-fileList.ondrop = (e) => {
+fileHover.ondragleave = (e) => {
+	e.preventDefault();
 	fileHover.style.display = "none";
-	addFile({ name: "File", size: 4096 });
 };
 
 fileInput.onchange = (e) => {
@@ -101,7 +109,6 @@ function setProgress(num) {
 }
 
 function completeHandler(e) {
-	console.log("Completed upload");
 	uploadBtn.disabled = false;
 
 	for (let i = 0, len = files.length; i < len; i++) {
@@ -157,7 +164,12 @@ function addUrl(filename) {
 	const copyBtn = document.createElement("button");
 	const copyBtnImg = document.createElement("img");
 
-	li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+	li.classList.add(
+		"list-group-item",
+		"d-flex",
+		"justify-content-between",
+		"align-items-center"
+	);
 	copyBtn.classList.add("btn", "btn-primary", "mx-2");
 
 	const linkURL = `${window.location.origin}/files/${filename}`;
