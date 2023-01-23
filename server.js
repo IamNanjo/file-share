@@ -35,7 +35,9 @@ if (isProduction) {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/", express.static(path.join(__dirname, "public")));
 
-app.post("/upload", upload.any());
+app.post("/upload", upload.any(), (req, res) =>
+	req.files && req.files.length ? res.sendStatus(201) : res.sendStatus(400)
+);
 
 server.listen(port, () => {
 	console.log("Listening on port", port);
