@@ -1,7 +1,6 @@
 const { createServer } = require("https");
 const { readFileSync } = require("fs");
 const express = require("express");
-const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
@@ -32,12 +31,33 @@ if (isProduction) {
 	server = app;
 }
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use("/", express.static(path.join(__dirname, "public")));
 
-app.post("/upload", upload.any(), (req, res) =>
-	req.files && req.files.length ? res.sendStatus(201) : res.sendStatus(400)
-);
+app.get("/upload/password-check", (req, res) => {
+	const password = req.headers.authorization
+		? req.headers.authorization.split(" ").slice(1).join(" ")
+		: "";
+	const hash = process.env.FILE_SHARE_HASH;
+
+	if (password && bcrypt.compareSync(password, hash)) res.sendStatus(200);
+	else res.sendStatus(401);
+});
+
+app.post("/upload", (req, res) => {
+	const password = req.headers.authorization
+		? req.headers.authorization.split(" ").slice(1).join(" ")
+		: "";
+	const hash = process.env.FILE_SHARE_HASH;
+
+	if (password && bcrypt.compareSync(password, hash)) {
+		upload.any()(req, res, () => {
+			req.files && req.files.length ? res.sendStatus(201) : res.sendStatus(400);
+		});
+	} else {
+		res.sendStatus(401);
+	}
+});
 
 server.listen(port, () => {
 	console.log("Listening on port", port);

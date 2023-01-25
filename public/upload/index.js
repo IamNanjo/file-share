@@ -1,8 +1,10 @@
+const password = document.getElementById("password");
 const fileInput = document.getElementById("fileInput");
 const fileList = document.getElementById("fileList");
 const fileHover = document.getElementById("fileHover");
 const uploadBtn = document.getElementById("uploadBtn");
 const clearListBtn = document.getElementById("clearListBtn");
+const abortBtn = document.getElementById("abortBtn");
 
 const progress = document.getElementById("progress");
 const progressPercentage = document.getElementById("progressPercentage");
@@ -10,6 +12,7 @@ const url = document.getElementById("url");
 const statusEl = document.getElementById("status");
 
 let files = [];
+let requests = [];
 
 window.ondrop = (e) => e.preventDefault();
 
@@ -42,7 +45,52 @@ fileInput.onchange = (e) => {
 	}
 };
 
+uploadBtn.onclick = async () => {
+	if (files.length) {
+		const passwordOK =
+			(
+				await fetch(`${window.location.href}/password-check`, {
+					headers: {
+						Authorization: `Basic ${password.value}`
+					}
+				})
+			).status === 200;
+
+		if (passwordOK) {
+			uploadBtn.disabled = true;
+			clearListBtn.style.display = "none";
+			abortBtn.style.display = "inline-block";
+			const formdata = new FormData();
+
+			for (let i = 0, len = files.length; i < len; i++) {
+				formdata.append(files[i].name, files[i], files[i].name);
+			}
+
+			setProgress(0);
+
+			const ajax = new XMLHttpRequest();
+			requests.push(ajax);
+			ajax.upload.onprogress = progressHandler;
+			ajax.onreadystatechange = () => {
+				uploadBtn.disabled = false;
+				if (ajax.status >= 200 && ajax.status < 400) completeHandler();
+				else errorHandler(ajax.status);
+			};
+
+			ajax.open("POST", window.location);
+			ajax.setRequestHeader("Authorization", "Basic " + password.value);
+			ajax.send(formdata);
+		} else {
+			showError("Invalid password");
+		}
+	} else {
+		showError("You need to select files first");
+	}
+};
+
 clearListBtn.onclick = (e) => {
+	statusEl.style.display = "none";
+
 	setProgress(0);
 	files = [];
 	fileInput.value = "";
@@ -52,64 +100,25 @@ clearListBtn.onclick = (e) => {
 	}
 };
 
-function addFile(file) {
-	const el = document.createElement("li");
-	const fileEl = document.createElement("div");
-	const fileName = document.createElement("span");
-	const fileSize = document.createElement("span");
-	const delBtn = document.createElement("button");
+abortBtn.onclick = (e) => {
+	statusEl.style.display = "none";
+	abortBtn.style.display = "none";
+	clearListBtn.style.display = "inline-block";
 
-	files.push(file);
-
-	el.classList.add("list-group-item");
-	fileSize.classList.add("text-secondary", "ml-3");
-	delBtn.classList.add("btn", "btn-primary");
-
-	fileName.innerText = file.name;
-	fileSize.innerText = humanReadableFilesize(file.size);
-
-	fileEl.appendChild(fileName);
-	fileEl.appendChild(fileSize);
-
-	el.appendChild(fileEl);
-
-	fileList.appendChild(el);
-}
-
-uploadBtn.onclick = () => {
-	uploadBtn.disabled = true;
-	const formdata = new FormData();
-
-	for (let i = 0, len = files.length; i < len; i++) {
-		const file = fileList.children[i];
-
-		formdata.append(files[i].name, files[i], files[i].name);
-	}
-
+	abortRequests();
 	setProgress(0);
-
-	const ajax = new XMLHttpRequest();
-	// ajax.setRequestHeader("Authorization", "Basic " + )
-	ajax.upload.addEventListener("progress", progressHandler, false);
-	ajax.addEventListener("load", completeHandler, false);
-	ajax.addEventListener("error", errorHandler, false);
-	ajax.addEventListener("abort", abortHandler, false);
-	ajax.open("POST", window.location);
-	ajax.send(formdata);
 };
 
 function progressHandler(e) {
 	setProgress(Math.round((e.loaded / e.total) * 100));
 }
 
-function setProgress(num) {
-	progress.style.width = `${num}%`;
-	progress.ariaValueNow = num;
-	progressPercentage.innerText = num;
-}
-
-function completeHandler(e) {
+function completeHandler() {
 	uploadBtn.disabled = false;
+	clearListBtn.style.display = "inline-block";
+	abortBtn.style.display = "none";
+
+	statusEl.style.display = "none";
 
 	for (let i = 0, len = files.length; i < len; i++) {
 		addUrl(files[i].name);
@@ -127,12 +136,19 @@ function completeHandler(e) {
 	}, 2000);
 }
 
-function errorHandler(e) {
-	statusEl.innerText = "Upload failed";
-}
+function errorHandler(status) {
+	if (status === 401 || status !== 0) {
+		clearListBtn.style.display = "inline-block";
+		abortBtn.style.display = "none";
 
-function abortHandler(e) {
-	statusEl.innerText = "Upload cancelled";
+		abortRequests();
+		setProgress(0);
+	}
+	if (status === 401) {
+		showError("Invalid password");
+	} else if (status !== 0) {
+		showError("Something went wrong");
+	}
 }
 
 function humanReadableFilesize(bytes) {
@@ -156,6 +172,36 @@ function humanReadableFilesize(bytes) {
 	);
 
 	return bytes.toFixed(dp) + " " + units[u];
+}
+
+function setProgress(num) {
+	progress.style.width = `${num}%`;
+	progress.ariaValueNow = num;
+	progressPercentage.innerText = num;
+}
+
+function addFile(file) {
+	const el = document.createElement("li");
+	const fileEl = document.createElement("div");
+	const fileName = document.createElement("span");
+	const fileSize = document.createElement("span");
+	const delBtn = document.createElement("button");
+
+	files.push(file);
+
+	el.classList.add("list-group-item");
+	fileSize.classList.add("text-secondary", "ml-3");
+	delBtn.classList.add("btn", "btn-primary");
+
+	fileName.innerText = file.name;
+	fileSize.innerText = humanReadableFilesize(file.size);
+
+	fileEl.appendChild(fileName);
+	fileEl.appendChild(fileSize);
+
+	el.appendChild(fileEl);
+
+	fileList.appendChild(el);
 }
 
 function addUrl(filename) {
@@ -196,4 +242,15 @@ function addUrl(filename) {
 	copyBtn.appendChild(copyBtnImg);
 	li.appendChild(copyBtn);
 	url.appendChild(li);
+}
+
+function showError(msg) {
+	statusEl.innerText = msg;
+	statusEl.style.display = "flex";
+}
+
+function abortRequests() {
+	for (let i = 0, len = requests.length; i < len; i++) {
+		requests[i].abort();
+	}
 }
