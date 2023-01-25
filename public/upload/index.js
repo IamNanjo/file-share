@@ -23,7 +23,7 @@ document.head.appendChild(fontCSS);
 // -------------
 
 // Default PWA window size
-if (!matchMedia("(display-mode: browser)").matches) window.resizeTo("1280x720");
+if (!matchMedia("(display-mode: browser)").matches) window.resizeTo(1280, 720);
 
 if ("serviceWorker" in navigator) {
 	navigator.serviceWorker.register("/sw.min.js");
