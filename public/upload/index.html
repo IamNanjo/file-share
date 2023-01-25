@@ -4,16 +4,16 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link rel="stylesheet" href="../assets/bootstrap.min.css" />
-		<link rel="stylesheet" href="style.css" />
-		<script defer src="index.js"></script>
-		<title>File upload</title>
+		<meta name="description" content="A simple app for sharing files on a server" />
+		<meta name="keywords" content="fileshare, file sharing" />
+		<meta name="theme-color" content="#2c2f3a">
+		<link rel="shortcut icon" href="/assets/favicon-thin.svg" type="image/x-icon">
+		<link rel="manifest" href="/assets/manifest.json" />
+		<link rel="apple-touch-icon" href="/assets/upload-file.png">
+		<link rel="stylesheet" href="/assets/bootstrap.min.css" />
+		<link rel="stylesheet" href="style.min.css" />
+		<script defer src="index.min.js"></script>
+		<title>File share</title>
 	</head>
 	<body>
 		<main>
@@ -23,6 +23,7 @@
 					id="password"
 					class="form-control"
 					type="password"
+					placeholder=""
 					autofocus
 					autocomplete="current-password"
 				/>
@@ -36,7 +37,9 @@
 			</ul>
 			<button id="uploadBtn" class="btn btn-primary mr-2">Upload</button>
 			<button id="clearListBtn" class="btn btn-danger">Clear list</button>
-			<button id="abortBtn" class="btn btn-danger" style="display: none;">Cancel upload</button>
+			<button id="abortBtn" class="btn btn-danger" style="display: none">
+				Cancel upload
+			</button>
 
 			<div class="progress mt-5">
 				<div
@@ -44,16 +47,18 @@
 					class="progress-bar"
 					role="progressbar"
 					style="width: 0%"
+					aria-label="progressbar"
+					aria-labelledby="progressPercentage"
 					aria-valuenow="0"
 					aria-valuemin="0"
 					aria-valuemax="100"
 				></div>
 			</div>
-			<div class="w-100 my-3 text-center">
-				<span id="progressPercentage">0</span><span> %</span>
+			<div id="progressPercentage" class="w-100 my-3 text-center">
+				0 %
 			</div>
-			<div id="status" class="alert alert-danger" style="display: none;"></div>
-			<ul id="url" class="list-group "></ul>
+			<div id="status" class="alert alert-danger" style="display: none"></div>
+			<ul id="url" class="list-group"></ul>
 		</main>
 	</body>
 </html>

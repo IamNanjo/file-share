@@ -1,0 +1,24 @@
+{
+	"$schema": "https://json.schemastore.org/web-manifest-combined.json",
+	"name": "File share",
+	"short_name": "File share",
+	"start_url": ".",
+	"display": "standalone",
+	"background_color": "#2c2f3a",
+    "theme_color": "#2c2f3a",
+	"description": "A simple app for sharing files on a server",
+	"icons": [
+		{
+			"src": "/assets/upload-file.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+            "purpose": "any maskable monochrome"
+		},
+		{
+			"src": "/assets/upload-file.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any"
+		}
+	]
+}
