@@ -5,6 +5,15 @@ const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
 
+/*
+	Uses these environment variables:
+		- NODE_ENV (set to "production" to use a secure connection and port specified by FILE_SHARE_PORT)
+		- SSL_KEY_PATH (path to SSL key e.g. privkey.pem)
+		- SSL_CERT_PATH (path to SSL certificate e.g. fullchain.pem)
+		- FILE_SHARE_PORT (port for the backend server)
+		- FILE_SHARE_HASH (bcrypt hash for the password. Without this the app will not require a password)
+*/
+
 const app = express();
 
 const storage = multer.diskStorage({
@@ -40,7 +49,8 @@ app.get("/upload/password-check", (req, res) => {
 		: "";
 	const hash = process.env.FILE_SHARE_HASH;
 
-	if (password && bcrypt.compareSync(password, hash)) res.sendStatus(200);
+	if (hash && password && bcrypt.compareSync(password, hash))
+		res.sendStatus(200);
 	else res.sendStatus(401);
 });
 
@@ -50,7 +60,7 @@ app.post("/upload", (req, res) => {
 		: "";
 	const hash = process.env.FILE_SHARE_HASH;
 
-	if (password && bcrypt.compareSync(password, hash)) {
+	if (hash && password && bcrypt.compareSync(password, hash)) {
 		upload.any()(req, res, () => {
 			req.files && req.files.length ? res.sendStatus(201) : res.sendStatus(400);
 		});
