@@ -14,7 +14,23 @@ const statusEl = document.getElementById("status");
 let files = [];
 let requests = [];
 
+// Defer font loading
+const fontCSS = document.createElement("link");
+fontCSS.href = "/assets/fonts.min.css";
+fontCSS.rel = "stylesheet";
+fontCSS.type = "text/css";
+document.head.appendChild(fontCSS);
+// -------------
+
+// Default PWA window size
+if (!matchMedia("(display-mode: browser)").matches) window.resizeTo("1280x720");
+
+if ("serviceWorker" in navigator) {
+	navigator.serviceWorker.register("/sw.min.js");
+}
+
 window.ondrop = (e) => e.preventDefault();
+window.ondragover = (e) => e.preventDefault();
 
 fileList.ondragover = (e) => {
 	e.preventDefault();
@@ -177,7 +193,7 @@ function humanReadableFilesize(bytes) {
 function setProgress(num) {
 	progress.style.width = `${num}%`;
 	progress.ariaValueNow = num;
-	progressPercentage.innerText = num;
+	progressPercentage.innerText = `${num} %`;
 }
 
 function addFile(file) {
