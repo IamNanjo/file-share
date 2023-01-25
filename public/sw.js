@@ -10,7 +10,7 @@ const PRECACHE_URLS = [
 	"/assets/done.svg",
 	"/assets/favicon.svg",
 	"/assets/favicon-thin.svg",
-	"/assets/manifest.json",
+	"/upload/manifest.json",
 	"/assets/upload-file.svg",
 	"/assets/upload-file.png",
 	"/assets/Roboto/Roboto-Bold.ttf",
