@@ -1,3 +1,5 @@
+const { request } = require("express");
+
 const PRECACHE = "precache-v1";
 const RUNTIME = "runtime";
 
@@ -51,7 +53,7 @@ self.addEventListener("fetch", (event) => {
 	if (event.request.url.startsWith(self.location.origin)) {
 		event.respondWith(
 			caches.match(event.request).then((cachedResponse) => {
-				if (cachedResponse) {
+				if (event.request.method === "GET" && cachedResponse) {
 					return cachedResponse;
 				}
 
