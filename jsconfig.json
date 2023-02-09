@@ -1,0 +1,7 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ESNext"
+	},
+    "exclude": ["public", "node_modules"]
+}
