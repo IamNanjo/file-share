@@ -1,9 +1,10 @@
 const { createServer } = require("https");
-const { readFileSync } = require("fs");
+const { readFileSync, existsSync } = require("fs");
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const getVideoInfo = require("get-video-info");
 
 /*
 	Uses these environment variables:
@@ -41,7 +42,45 @@ if (isProduction) {
 }
 
 app.use(express.urlencoded({ extended: true }));
-app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/assets", express.static(path.join(__dirname, "public", "assets")));
+app.use("/upload", express.static(path.join(__dirname, "public", "upload")));
+
+app.get("/files/:file", async (req, res) => {
+	const filename = path.basename(req.params.file);
+	const extension = filename.split(".").pop();
+	const filepath = path.join(__dirname, "public", "files", filename);
+
+	if (!existsSync(filepath)) return res.sendStatus(404);
+	if (!req.query.embed || !["mp4", "ogg"].includes(extension))
+		return res.sendFile(filepath);
+
+	let datetime = new Date();
+
+	datetime = `${datetime.getFullYear()}-${
+		datetime.getMonth() + 1
+	}-${datetime.getDate()} ${datetime.getHours()}:${datetime.getMinutes()}:${datetime.getSeconds()}`;
+
+	let videoSize = await getVideoInfo(filepath);
+	videoSize = {
+		width: videoSize.streams[0].width,
+		height: videoSize.streams[0].height
+	};
+
+	res.send(`
+	<!DOCTYPE html>
+	<html>
+	<!-- Generated at ${datetime} -->
+	<head>
+		<meta property="og:type" content="video.other">
+		<meta property="twitter:player" content="/files/${filename}">
+		<meta property="og:video:type" content="text/html">
+		<meta property="og:video:width" content="${videoSize.width}">
+		<meta property="og:video:height" content="${videoSize.height}">
+		<meta name="twitter:image" content="/assets/upload-file.png">
+		<meta http-equiv="refresh" content="0;url=/files/${filename}">
+	</head>
+	</html>`);
+});
 
 app.get("/upload/password-check", (req, res) => {
 	const password = req.headers.authorization
