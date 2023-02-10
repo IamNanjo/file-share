@@ -106,9 +106,9 @@ async function upload() {
 			ajax.upload.onprogress = (e) =>
 				setProgress(Math.round((e.loaded / e.total) * 100));
 			ajax.onreadystatechange = () => {
-				console.log("State change", ajax.status);
 				if (ajax.status >= 200 && ajax.status < 400) completeHandler();
-				else errorHandler(ajax.status);
+				else if (ajax.status !== 0) errorHandler(ajax.status);
+
 				uploadBtn.addEventListener("click", upload, { once: true });
 			};
 
