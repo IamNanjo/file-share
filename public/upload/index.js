@@ -22,13 +22,6 @@ fontCSS.type = "text/css";
 document.head.appendChild(fontCSS);
 // -------------
 
-// Default PWA window size
-if (!matchMedia("(display-mode: browser)").matches) window.resizeTo(1280, 800);
-
-if ("serviceWorker" in navigator) {
-	navigator.serviceWorker.register("/sw.min.js");
-}
-
 window.ondrop = (e) => e.preventDefault();
 window.ondragover = (e) => e.preventDefault();
 
@@ -61,48 +54,7 @@ fileInput.onchange = (e) => {
 	}
 };
 
-uploadBtn.onclick = async () => {
-	if (files.length) {
-		const passwordOK =
-			(
-				await fetch(`${window.location.href}/password-check`, {
-					headers: {
-						Authorization: `Basic ${password.value}`
-					}
-				})
-			).status === 200;
-
-		if (passwordOK) {
-			uploadBtn.disabled = true;
-			clearListBtn.style.display = "none";
-			abortBtn.style.display = "inline-block";
-			const formdata = new FormData();
-
-			for (let i = 0, len = files.length; i < len; i++) {
-				formdata.append(files[i].name, files[i], files[i].name);
-			}
-
-			setProgress(0);
-
-			const ajax = new XMLHttpRequest();
-			requests.push(ajax);
-			ajax.upload.onprogress = progressHandler;
-			ajax.onreadystatechange = () => {
-				uploadBtn.disabled = false;
-				if (ajax.status >= 200 && ajax.status < 400) completeHandler();
-				else errorHandler(ajax.status);
-			};
-
-			ajax.open("POST", window.location);
-			ajax.setRequestHeader("Authorization", "Basic " + password.value);
-			ajax.send(formdata);
-		} else {
-			showError("Invalid password");
-		}
-	} else {
-		showError("You need to select files first");
-	}
-};
+uploadBtn.addEventListener("click", upload, { once: true });
 
 clearListBtn.onclick = (e) => {
 	statusEl.style.display = "none";
@@ -123,14 +75,56 @@ abortBtn.onclick = (e) => {
 
 	abortRequests();
 	setProgress(0);
+
+	uploadBtn.addEventListener("click", upload, { once: true });
 };
 
-function progressHandler(e) {
-	setProgress(Math.round((e.loaded / e.total) * 100));
+async function upload() {
+	if (files.length) {
+		const passwordOK =
+			(
+				await fetch(`${window.location.href}/password-check`, {
+					headers: {
+						Authorization: `Basic ${password.value}`
+					}
+				})
+			).status === 200;
+
+		if (passwordOK) {
+			clearListBtn.style.display = "none";
+			abortBtn.style.display = "inline-block";
+			const formdata = new FormData();
+
+			for (let i = 0, len = files.length; i < len; i++) {
+				formdata.append(files[i].name, files[i], files[i].name);
+			}
+
+			setProgress(0);
+
+			const ajax = new XMLHttpRequest();
+			requests.push(ajax);
+			ajax.upload.onprogress = (e) =>
+				setProgress(Math.round((e.loaded / e.total) * 100));
+			ajax.onreadystatechange = () => {
+				console.log("State change", ajax.status);
+				if (ajax.status >= 200 && ajax.status < 400) completeHandler();
+				else errorHandler(ajax.status);
+				uploadBtn.addEventListener("click", upload, { once: true });
+			};
+
+			ajax.open("POST", window.location.href);
+			ajax.setRequestHeader("Authorization", `Basic ${password.value}`);
+			ajax.send(formdata);
+		} else {
+			showError("Invalid password");
+		}
+	} else {
+		showError("You need to select files first");
+	}
 }
 
 function completeHandler() {
-	uploadBtn.disabled = false;
+	uploadBtn.style.display = "inline-block";
 	clearListBtn.style.display = "inline-block";
 	abortBtn.style.display = "none";
 
@@ -153,6 +147,7 @@ function completeHandler() {
 }
 
 function errorHandler(status) {
+	uploadBtn.style.display = "inline-block";
 	if (status === 401 || status !== 0) {
 		clearListBtn.style.display = "inline-block";
 		abortBtn.style.display = "none";
@@ -234,7 +229,10 @@ function addUrl(filename) {
 	);
 	copyBtn.classList.add("btn", "btn-primary", "mx-2");
 
-	const linkURL = `${window.location.origin}/files/${filename}`;
+	let linkURL = `${window.location.origin}/files/${filename}`;
+
+	if (["mp4", "ogg"].includes(filename.split(".").pop()))
+		linkURL += "?embed=true";
 
 	aEl.href = linkURL;
 	aEl.target = "_blank";
