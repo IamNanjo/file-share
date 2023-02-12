@@ -1,5 +1,7 @@
 # File share
 
+![Image of the UI](https://student.labranet.jamk.fi/~AB6262/images/file-share.webp)
+
 Simple web app for uploading files on a server.
 Creates links to those files after a succesful upload.
 
