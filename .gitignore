@@ -1,0 +1,8 @@
+.vscode
+.env
+node_modules
+files
+
+pm2-config.json
+
+*.js
