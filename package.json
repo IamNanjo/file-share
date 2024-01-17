@@ -1,0 +1,33 @@
+{
+  "name": "fileshare",
+  "author": {
+    "name": "IamNanjo",
+    "url": "https://github.com/IamNanjo"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@hebilicious/authjs-nuxt": "latest",
+    "@nuxtjs/color-mode": "latest",
+    "@nuxtjs/google-fonts": "latest",
+    "@nuxtjs/plausible": "latest",
+    "@types/bcrypt": "^5.0.2",
+    "nuxt": "^3.9.1",
+    "nuxt-icon": "latest",
+    "prisma": "5.8.0",
+    "sass": "^1.69.7",
+    "vue": "^3.4.10",
+    "vue-router": "^4.2.5"
+  },
+  "dependencies": {
+    "@prisma/client": "5.8.0",
+    "bcrypt": "^5.1.1"
+  }
+}
