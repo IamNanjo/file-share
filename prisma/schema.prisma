@@ -32,15 +32,16 @@ model Role {
 }
 
 model File {
-  id        String    @id @default(uuid())
-  ownerId   String
-  name      String
-  type      String
-  thumbnail Boolean
-  size      Int
-  created   DateTime  @default(now())
-  owner     User      @relation(fields: [ownerId], references: [id])
-  comments  Comment[]
+  id           String    @id @default(uuid())
+  ownerId      String
+  name         String
+  type         String?
+  hasThumbnail Boolean?
+  size         Int?
+  sizeString   String?
+  created      DateTime  @default(now())
+  owner        User      @relation(fields: [ownerId], references: [id])
+  comments     Comment[]
 
   @@index([id, ownerId])
 }
