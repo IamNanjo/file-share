@@ -39,7 +39,7 @@ onMounted(() => {
 /* Page transition */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.15s;
+  transition: all 0.3s;
 }
 .page-enter-from,
 .page-leave-to {
