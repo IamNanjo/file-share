@@ -4,7 +4,6 @@ const auth = useAuth();
 
 const toggleMenu = () => {
   menuIsOpen.value = !menuIsOpen.value;
-  console.log("menuIsOpen.value :>> ", menuIsOpen.value);
 };
 </script>
 
