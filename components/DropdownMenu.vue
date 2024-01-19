@@ -25,9 +25,9 @@
     position: absolute;
     background-color: var(--bg-raise-1);
     max-width: min(75vw, 14em);
-    bottom: -0.5em;
-    left: 1em;
-    transform: translate(-100%, 100%);
+    top: -0.5em;
+    right: 1em;
+    transform: translate(100%, -100%);
     border-radius: 6px;
     box-shadow: 1px 1px 4px 2px black;
 
@@ -54,13 +54,14 @@
       text-overflow: ellipsis;
       overflow: hidden;
     }
-  }
 
-  select {
-    padding: 0.25em 0.5em;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
+    @media screen and (min-width: 30em) {
+      top: unset;
+      right: unset;
+      bottom: -0.5em;
+      left: 1em;
+      transform: translate(-100%, 100%);
+    }
   }
 }
 </style>
