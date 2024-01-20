@@ -1,3 +1,5 @@
+// Production config
+
 module.exports = {
   apps: [
     {
@@ -8,6 +10,8 @@ module.exports = {
       env: {
         PORT: 11443,
         DATABASE_URL: "file:/var/www/fileshare/prisma/fileshare-production.db",
+        FILESHARE_FILES_PATH: "/var/www/fileshare/uploads/files",
+        FILESHARE_THUMBNAILS_PATH: "/var/www/fileshare/uploads/thumbnails",
       },
     },
   ],
