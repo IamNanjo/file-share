@@ -3,7 +3,7 @@ import type { AuthConfig } from "@auth/core/types";
 import { NuxtAuthHandler } from "#auth";
 import bcrypt from "bcrypt";
 
-import prisma from "~/server/db";
+import db from "~/server/db";
 
 const runtimeConfig = useRuntimeConfig();
 
@@ -13,7 +13,7 @@ const getUser = async (username: string) => {
     id: string;
     name: string;
     password: string;
-  }[] = await prisma.$queryRaw`
+  }[] = await db.$queryRaw`
     SELECT id, name, password
     FROM User
     WHERE name LIKE ${username}
@@ -31,10 +31,21 @@ const getUser = async (username: string) => {
 };
 
 export const authOptions: AuthConfig = {
-  secret: process.env.FILESHARE_SECRET,
-  // 365-day session duration. Prioritize UX
+  secret: process.env.FILESHARE_SECRET || "devSecret",
   session: { strategy: "jwt", maxAge: 365 * 24 * 60 * 60 },
   theme: { colorScheme: "auto", brandColor: "#FF6961" },
+  callbacks: {
+    jwt: ({ token, account, user }) => {
+      if (account) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      if (session.user) session.user.id = token.id as string;
+      return session;
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -54,8 +65,6 @@ export const authOptions: AuthConfig = {
           const username = credentials.username as string;
           const password = credentials.password as string;
 
-          credentials = credentials as { username: string; password: string };
-
           let user = await getUser(username);
 
           if (!user) {
@@ -63,7 +72,7 @@ export const authOptions: AuthConfig = {
 
             if (!hash) return null;
 
-            user = await prisma.user.create({
+            user = await db.user.create({
               data: {
                 name: username,
                 password: hash,
@@ -75,10 +84,10 @@ export const authOptions: AuthConfig = {
               },
             });
           } else if (!(await bcrypt.compare(password, user.password))) {
-            return null;
+            return resolve(null);
           }
 
-          if (!user) return null;
+          if (!user) return resolve(null);
           return resolve({
             id: user.id,
             name: user.name,
