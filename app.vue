@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <NuxtLoadingIndicator color="#FF6961" :height="6" />
+  <NuxtLoadingIndicator color="#FF6961" :height="3" />
   <NavBar />
   <NuxtPage />
 </template>
@@ -39,7 +39,7 @@ onMounted(() => {
 /* Page transition */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 .page-enter-from,
 .page-leave-to {
@@ -47,6 +47,10 @@ onMounted(() => {
   filter: blur(1rem);
 }
 /* =============== */
+
+/* Toast styles */
+@import "node_modules/vue-toast-notification/dist/theme-bootstrap.css";
+/* ============ */
 
 *,
 *::before,
@@ -88,7 +92,7 @@ onMounted(() => {
   --bg-primary: #121212;
   --bg-raise: rgba(255, 255, 255, 0.07);
   --bg-raise-1: #232323;
-  --fg-primary: #ff6961;
+  --fg-primary: 255, 105, 97;
   --text-primary: white;
   --text-alt: #666666;
   --ff-primary: "Roboto", sans-serif;
@@ -105,7 +109,6 @@ onMounted(() => {
   --bg-primary: #ffffff;
   --bg-raise: rgba(0, 0, 0, 0.07);
   --bg-raise-1: #ffffff;
-  --fg-primary: #ff6961;
   --text-primary: black;
   --text-alt: #aaaaaa;
 }
@@ -120,14 +123,15 @@ html {
 }
 
 html,
-body {
+body,
+main {
   height: 100%;
 }
 
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  padding-bottom: 3em;
+  padding-block: 3em;
   font-family: var(--ff-primary);
   overflow-x: hidden;
   z-index: 0;
@@ -146,7 +150,6 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
 }
 
 nav {
@@ -186,5 +189,27 @@ button {
 a {
   color: var(--text-primary);
   text-decoration: none;
+}
+
+.toast {
+  position: absolute;
+  top: 0 !important;
+  left: 0;
+  background-color: var(--bg-raise-1);
+  width: 100%;
+  height: max-content;
+  padding: 1em;
+  border: 1px solid var(--text-alt);
+  text-align: center;
+  transform: translateY(0) !important;
+  font-size: 1.125rem;
+  font-family: var(--ff-mono);
+  font-weight: 500;
+  z-index: 100;
+
+  @media screen and (min-width: 30em) {
+    top: unset !important;
+    bottom: 0 !important;
+  }
 }
 </style>
