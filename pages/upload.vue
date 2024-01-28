@@ -1,14 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-import { useToast, type ToastProps } from "vue-toast-notification";
+import { useToast } from "vue-toast-notification";
 
-const toast = useToast();
-const toastConfig: ToastProps = {
+const toast = useToast({
   position: "top",
   duration: 2500,
   dismissible: true,
-};
+});
 
 const fileEntries = ref<
   {
@@ -16,6 +15,7 @@ const fileEntries = ref<
     name: string;
     file: File;
     progress: number;
+    private: boolean;
     upload?: XMLHttpRequest;
     url?: string;
   }[]
@@ -54,6 +54,7 @@ function addFiles(fileList: FileList) {
       file,
       name: fileNameWithoutExtension,
       progress: 0,
+      private: false,
     });
   }
 }
@@ -85,6 +86,7 @@ async function handleUpload() {
       body: {
         name: fileEntry.name,
         extension: splitFileName.length > 1 ? `.${splitFileName.pop()}` : "",
+        private: fileEntry.private,
       },
     });
 
@@ -113,7 +115,7 @@ async function handleUpload() {
     });
 
     xhr.addEventListener("error", () => {
-      toast.error("Something went wrong. Please try again", toastConfig);
+      toast.error("Something went wrong. Please try again");
       uploading.value = false;
     });
 
@@ -129,7 +131,7 @@ async function handleUpload() {
 
 function handleCopyUrl(url: string) {
   navigator.clipboard.writeText(url);
-  toast.success("Link copied!", toastConfig);
+  toast.success("Link copied!");
 }
 
 function cancelUpload() {
@@ -216,16 +218,49 @@ onMounted(() => {
             <p class="upload-form__file-size">
               {{ humanReadableFilesize(fileEntry.file.size) }}
             </p>
-            <button
-              v-if="!fileEntry.url"
-              type="button"
-              @click="removeFile(index)"
-            >
-              <Icon name="material-symbols:close-rounded" size="1.5em" />
-            </button>
-            <button v-else type="button" @click="handleCopyUrl(fileEntry.url)">
-              <Icon name="material-symbols:content-copy-rounded" size="1.5em" />
-            </button>
+
+            <div class="upload-form__file-buttons">
+              <button
+                v-if="!fileEntry.url"
+                type="button"
+                @click="fileEntries[index].private = !fileEntry.private"
+                :title="
+                  fileEntry.private
+                    ? 'The file will be private'
+                    : 'The file will be public'
+                "
+              >
+                <Icon
+                  v-if="fileEntry.private"
+                  name="material-symbols:visibility-off-rounded"
+                  size="1.5em"
+                />
+                <Icon
+                  v-else
+                  name="material-symbols:visibility-rounded"
+                  size="1.5em"
+                />
+              </button>
+              <button
+                v-if="!fileEntry.url"
+                type="button"
+                @click="removeFile(index)"
+                title="Remove file"
+              >
+                <Icon name="material-symbols:close-rounded" size="1.5em" />
+              </button>
+              <button
+                v-else
+                type="button"
+                @click="handleCopyUrl(fileEntry.url)"
+                title="Copy link to file"
+              >
+                <Icon
+                  name="material-symbols:content-copy-rounded"
+                  size="1.5em"
+                />
+              </button>
+            </div>
           </div>
         </li>
       </ul>
@@ -255,6 +290,14 @@ onMounted(() => {
   </main>
 </template>
 
+<style scoped lang="scss">
+main {
+  display: grid;
+  place-items: center;
+  grid-template-columns: 1fr;
+}
+</style>
+
 <style lang="scss">
 @keyframes border-dance {
   0% {
@@ -264,12 +307,6 @@ onMounted(() => {
     background-position: left 15px top, right 15px bottom, left bottom 15px,
       right top 15px;
   }
-}
-
-main {
-  display: grid;
-  place-items: center;
-  grid-template-columns: 1fr;
 }
 
 .upload-form {
@@ -357,6 +394,11 @@ main {
     &-size {
       font-family: var(--ff-mono);
       white-space: nowrap;
+    }
+
+    &-buttons {
+      display: flex;
+      gap: 0.5em;
     }
 
     &-progress {
