@@ -48,6 +48,19 @@ onMounted(() => {
 }
 /* =============== */
 
+/* Transition groups */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  scale: 0;
+}
+/* ================= */
+
 /* Toast styles */
 @import "node_modules/vue-toast-notification/dist/theme-bootstrap.css";
 /* ============ */
@@ -135,10 +148,6 @@ body {
   font-family: var(--ff-primary);
   overflow-x: hidden;
   z-index: 0;
-
-  @media screen and (min-width: 30em) {
-    padding-block: 3em 0;
-  }
 }
 
 body,
