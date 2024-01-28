@@ -180,6 +180,7 @@ kbd {
   font-family: var(--ff-mono);
 }
 
+a,
 kbd,
 img,
 button {
