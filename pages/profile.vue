@@ -1,13 +1,23 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-const { data: profile, pending, refresh } = await useLazyFetch("/api/profile");
+const { data: profile, pending } = await useLazyFetch("/api/profile");
+const files = ref(profile.value ? profile.value.files : []);
 
-async function deleteFile(e: Event, id: string) {
+async function deleteFile(e: Event, index: number, id: string) {
+  e.preventDefault();
   e.stopPropagation();
-  await $fetch(`/api/files/${id}`, { method: "DELETE" });
-  refresh({ dedupe: true });
+
+  if (!profile.value) return;
+
+  const deletedFile = await $fetch(`/api/files/${id}`, { method: "delete" });
+
+  files.value.splice(index, 1);
 }
+
+onMounted(() => {
+  files.value = profile.value ? profile.value.files : [];
+});
 </script>
 
 <template>
@@ -17,9 +27,14 @@ async function deleteFile(e: Event, id: string) {
       <div></div>
     </header>
 
-    <div v-if="!pending && profile" class="file-list">
+    <TransitionGroup
+      v-if="!pending && profile"
+      class="file-list"
+      name="list"
+      tag="div"
+    >
       <NuxtLink
-        v-for="file in profile.files"
+        v-for="(file, index) in files"
         :key="file.id"
         class="file-list__file"
         :external="true"
@@ -42,7 +57,10 @@ async function deleteFile(e: Event, id: string) {
         <Icon v-else name="material-symbols:note-rounded" size="5em" />
         <p class="file-list__file-name">{{ file.name }}</p>
         <div class="file-list__file-info">
-          <button @click="(e) => deleteFile(e, file.id)">
+          <button
+            class="file-list__file-delete"
+            @click="(e) => deleteFile(e, index, file.id)"
+          >
             <Icon name="material-symbols:delete-rounded" size="1.25em" />
           </button>
           <a
@@ -56,12 +74,13 @@ async function deleteFile(e: Event, id: string) {
           </a>
         </div></NuxtLink
       >
-    </div>
+    </TransitionGroup>
   </main>
 </template>
 
 <style scoped lang="scss">
 main {
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
 }
