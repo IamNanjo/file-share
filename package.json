@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@hebilicious/authjs-nuxt": "latest",
-    "@nuxt/image": "latest",
     "@nuxtjs/color-mode": "latest",
     "@nuxtjs/google-fonts": "latest",
     "@nuxtjs/plausible": "latest",
