@@ -101,7 +101,8 @@ const { data: files, pending } = await useLazyFetch("/api/files");
     }
 
     &-owner,
-    &-size {
+    &-size,
+    &-delete {
       color: var(--text-alt);
       font-size: 1.125em;
       transition: color 0.3s ease;
