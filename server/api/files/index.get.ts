@@ -8,7 +8,6 @@ export default defineEventHandler((e) => {
       name: true,
       type: true,
       sizeString: true,
-      hasThumbnail: true,
       created: true,
       owner: { select: { id: true, name: true } },
     },
