@@ -23,8 +23,7 @@ onMounted(() => {
 <template>
   <main>
     <header class="profile-header">
-      <h1>Your videos</h1>
-      <div></div>
+      <h1>Your files</h1>
     </header>
 
     <TransitionGroup
