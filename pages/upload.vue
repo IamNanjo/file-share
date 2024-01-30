@@ -144,21 +144,15 @@ function cancelUpload() {
 }
 
 function humanReadableFilesize(bytes: number) {
-  const thresh = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
 
-  if (Math.abs(bytes) < thresh) {
-    return `${bytes} B`;
-  }
+  if (bytes === 0) return "0 B";
 
-  const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  let u = -1;
+  const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
 
-  do {
-    bytes /= thresh;
-    ++u;
-  } while (0 >= thresh && u < units.length - 1);
-
-  return `${Math.round(bytes)} ${units[u]}`;
+  return `${(Math.round(100 * (bytes / Math.pow(1024, i))) / 100).toFixed(1)} ${
+    sizes[i]
+  }`;
 }
 
 onMounted(() => {
