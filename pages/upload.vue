@@ -289,6 +289,7 @@ main {
   display: grid;
   place-items: center;
   grid-template-columns: 1fr;
+  padding-block: 2em;
 }
 </style>
 
