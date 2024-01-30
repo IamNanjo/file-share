@@ -25,13 +25,13 @@ export default defineEventHandler(async (e) => {
     });
 
     if (!deletedFile) return setResponseStatus(e, 404);
-
-    await Promise.all([
-      fs.unlink(path.join(filesPath, id)).catch(() => null),
-      fs.unlink(path.join(thumbnailsPath, id)).catch(() => null),
-    ]);
-  } finally {
-    setResponseStatus(e, 204);
-    return deletedFile;
+  } catch (err) {
+    console.error(err);
   }
+
+  await fs.unlink(path.join(filesPath, id)).catch(() => null);
+  await fs.unlink(path.join(thumbnailsPath, id)).catch(() => null);
+
+  setResponseStatus(e, 204);
+  return deletedFile;
 });
