@@ -32,19 +32,18 @@ model Role {
 }
 
 model File {
-  id           String    @id @default(uuid())
-  ownerId      String
-  name         String
-  private      Boolean   @default(false)
-  type         String?
-  hasThumbnail Boolean   @default(false)
-  size         Int       @default(0)
-  sizeString   String    @default("0 MB")
-  width        Int       @default(0)
-  height       Int       @default(0)
-  created      DateTime  @default(now())
-  owner        User      @relation(fields: [ownerId], references: [id])
-  comments     Comment[]
+  id         String    @id @default(uuid())
+  ownerId    String
+  name       String
+  private    Boolean   @default(false)
+  type       String?
+  size       Int       @default(0)
+  sizeString String    @default("0 B")
+  width      Int       @default(0)
+  height     Int       @default(0)
+  created    DateTime  @default(now())
+  owner      User      @relation(fields: [ownerId], references: [id])
+  comments   Comment[]
 
   @@index([id, ownerId])
 }
