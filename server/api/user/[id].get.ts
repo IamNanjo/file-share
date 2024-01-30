@@ -11,6 +11,7 @@ export default defineEventHandler((e) => {
       id: true,
       name: true,
       files: {
+        where: { private: false },
         select: {
           id: true,
           name: true,
