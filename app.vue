@@ -203,29 +203,9 @@ a {
   text-decoration: none;
 }
 
-.toast {
-  position: absolute;
-  top: 0 !important;
-  left: 0;
-  background-color: var(--bg-raise-1);
-  width: 100%;
-  height: max-content;
-  padding: 1em;
-  border: 1px solid var(--text-alt);
-  text-align: center;
-  transform: translateY(0) !important;
-  font-size: 1.125rem;
-  font-family: var(--ff-mono);
-  font-weight: 500;
-  z-index: 100;
-
-  @media screen and (min-width: 30em) {
-    top: unset !important;
-    bottom: 0 !important;
-  }
-}
-
 .page__bottom-padding {
+  visibility: hidden;
+  display: flex;
   width: 100%;
   height: 2em;
 }
