@@ -1,25 +1,22 @@
 import multer from "multer";
+import ffmpeg from "fluent-ffmpeg";
 
 import db from "~/server/db";
 import getServerSession from "~/server/getServerSession";
 
+const filesPath = process.env.FILESHARE_FILES_PATH;
+const thumbnailsPath = process.env.FILESHARE_THUMBNAILS_PATH;
+
 function humanReadableFilesize(bytes: number) {
-  const dp = 1;
-  const thresh = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
 
-  if (Math.abs(bytes) < thresh) {
-    return `${bytes} B`;
-  }
+  if (bytes === 0) return "0 B";
 
-  const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  let u = -1;
+  const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
 
-  do {
-    bytes /= thresh;
-    ++u;
-  } while (bytes >= thresh && u < units.length - 1);
-
-  return `${bytes.toFixed(dp)} ${units[u]}`;
+  return `${(Math.round(100 * (bytes / Math.pow(1024, i))) / 100).toFixed(1)} ${
+    sizes[i]
+  }`;
 }
 
 export default defineEventHandler(async (e) => {
@@ -38,8 +35,7 @@ export default defineEventHandler(async (e) => {
   const multerUpload = multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
-        const filesPath = process.env.FILESHARE_FILES_PATH;
-        if (!filesPath) throw Error("No path for files defined");
+        if (!filesPath) throw new Error("No path for files defined");
         cb(null, filesPath);
       },
       filename: async (req, file, cb) => {
@@ -72,6 +68,15 @@ export default defineEventHandler(async (e) => {
           sizeString: humanReadableFilesize(file.size),
         },
       });
+
+      ffmpeg(`${filesPath}/${id}`)
+        .screenshot({
+          filename: `${id}.png`,
+          folder: thumbnailsPath,
+          timestamps: [0],
+          size: "550x309",
+        })
+        .run();
 
       return setResponseStatus(e, 201);
     })
