@@ -10,7 +10,7 @@ async function deleteFile(e: Event, index: number, id: string) {
 
   if (!profile.value) return;
 
-  const deletedFile = await $fetch(`/api/files/${id}`, { method: "delete" });
+  await $fetch(`/api/files/${id}`, { method: "delete" });
 
   files.value.splice(index, 1);
 }
