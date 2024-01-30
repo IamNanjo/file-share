@@ -33,6 +33,7 @@ onMounted(() => {
   <NuxtLoadingIndicator color="#FF6961" :height="3" />
   <NavBar />
   <NuxtPage />
+  <footer class="page__bottom-padding"></footer>
 </template>
 
 <style lang="scss">
@@ -222,5 +223,10 @@ a {
     top: unset !important;
     bottom: 0 !important;
   }
+}
+
+.page__bottom-padding {
+  width: 100%;
+  height: 2em;
 }
 </style>
