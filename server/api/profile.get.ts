@@ -17,7 +17,6 @@ export default defineEventHandler(async (e) => {
           name: true,
           type: true,
           sizeString: true,
-          hasThumbnail: true,
           created: true,
         },
         orderBy: { created: "desc" },
