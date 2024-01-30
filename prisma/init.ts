@@ -17,7 +17,7 @@ for (const { id, name } of roles) {
 
     const createdRole = await db.role.create({ data: { id, name } });
     console.log("Role created:", createdRole);
-  } catch {
-    console.log("Role import failed:", { id, name });
+  } catch (err) {
+    console.log("Role import failed:", { id, name }, err);
   }
 }
