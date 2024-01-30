@@ -26,8 +26,10 @@ export default defineEventHandler(async (e) => {
 
     if (!deletedFile) return setResponseStatus(e, 404);
 
-    await fs.unlink(path.join(filesPath, id));
-    await fs.unlink(path.join(thumbnailsPath, id));
+    await Promise.all([
+      fs.unlink(path.join(filesPath, id)).catch(() => null),
+      fs.unlink(path.join(thumbnailsPath, id)).catch(() => null),
+    ]);
   } finally {
     setResponseStatus(e, 204);
     return deletedFile;
