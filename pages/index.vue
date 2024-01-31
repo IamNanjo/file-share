@@ -52,7 +52,7 @@ const { data: files, pending } = await useLazyFetch("/api/files");
 <style lang="scss">
 .file-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16em, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
   align-content: start;
   gap: 2em;
   width: 100%;
