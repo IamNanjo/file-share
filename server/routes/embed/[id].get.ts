@@ -13,34 +13,33 @@ export default defineEventHandler(async (e) => {
 
   if (file.type.includes("video"))
     return `<!DOCTYPE html>
-<html>
-<head>
-	<meta property="og:type" content="video.other">
-	<meta property="og:title" content="${file?.name}" />
-	<meta property="twitter:player" content="${fileUrl}">
-	<meta name="twitter:url" content="${fileUrl}" />
-	<meta name="twitter:title" content="${file.name}" />
-	<meta property="og:video" content="${fileUrl}"/>
-	<meta property="og:video:type" content="${file.type}">
-	<meta property="og:video:width" content="${file.width}">
-	<meta property="og:video:height" content="${file.height}">
-	<meta name="twitter:image" content="${url.origin}/thumbnails/${file.id}">
-	<meta http-equiv="refresh" content="0;url=${fileUrl}">
-</head>
-</html>`;
+<html><head>
+  <meta property="twitter:player" content="${fileUrl}" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="${fileUrl}" />
+  <meta name="twitter:title" content="${file.name}" />
+  <meta name="twitter:image" content="${url.origin}/thumbnails/${file.id}" />
+  <meta property="og:type" content="video.movie" />
+  <meta property="og:title" content="${file?.name}" />
+  <meta property="og:video" content="${fileUrl}" />
+  <meta property="og:video:type" content="${file.type}" />
+  <meta property="og:video:width" content="${file.width}" />
+  <meta property="og:video:height" content="${file.height}" />
+  <meta http-equiv="refresh" content="0;url=${url.origin}/watch/${file.id}" />
+</head></html>
+`;
 
   if (file.type.includes("image"))
     return `<!DOCTYPE html>
-<html>
-<head>
+<html><head>
 	<meta property="og:title" content="${file?.name}" />
 	<meta property="og:image" content="${fileUrl}" />
 	<meta name="twitter:url" content="${fileUrl}" />
 	<meta name="twitter:title" content="${file.name}" />
-	<meta name="twitter:image" content="${fileUrl}">
-	<meta http-equiv="refresh" content="0;url=${fileUrl}">
-</head>
-</html>`;
+	<meta name="twitter:image" content="${fileUrl}" />
+	<meta http-equiv="refresh" content="0;url=${fileUrl}" />
+</head></html>
+`;
 
   return sendRedirect(e, `${fileUrl}`);
 });
