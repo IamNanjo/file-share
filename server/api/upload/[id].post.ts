@@ -1,5 +1,6 @@
+import path from "node:path";
 import multer from "multer";
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg, { type FfprobeData } from "fluent-ffmpeg";
 
 import db from "~/server/db";
 import getServerSession from "~/server/getServerSession";
@@ -60,16 +61,36 @@ export default defineEventHandler(async (e) => {
         size: number;
       };
 
+      let width = 0;
+      let height = 0;
+
+      if (file.mimetype.includes("video")) {
+        try {
+          const dimensions: FfprobeData = await new Promise((resolve) =>
+            ffmpeg(path.join(filesPath!, id)).ffprobe((err, data) =>
+              resolve(data)
+            )
+          );
+
+          width = dimensions.streams[0].width!;
+          height = dimensions.streams[0].height!;
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       await db.file.update({
         where: { id, ownerId: session!.user!.id },
         data: {
           type: file.mimetype,
           size: file.size,
+          width,
+          height,
           sizeString: humanReadableFilesize(file.size),
         },
       });
 
-      ffmpeg(`${filesPath}/${id}`)
+      ffmpeg(path.join(filesPath!, id))
         .screenshot({
           filename: `${id}.png`,
           folder: thumbnailsPath,
