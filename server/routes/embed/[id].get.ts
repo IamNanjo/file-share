@@ -20,7 +20,8 @@ export default defineEventHandler(async (e) => {
 	<meta property="twitter:player" content="${fileUrl}">
 	<meta name="twitter:url" content="${fileUrl}" />
 	<meta name="twitter:title" content="${file.name}" />
-	<meta property="og:video:type" content="text/html">
+	<meta property="og:video" content="${fileUrl}"/>
+	<meta property="og:video:type" content="${file.type}">
 	<meta property="og:video:width" content="${file.width}">
 	<meta property="og:video:height" content="${file.height}">
 	<meta name="twitter:image" content="${url.origin}/thumbnails/${file.id}">
