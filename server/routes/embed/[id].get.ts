@@ -17,7 +17,7 @@ export default defineEventHandler(async (e) => {
 <head>
 	<meta property="og:type" content="video.other">
 	<meta property="og:title" content="${file?.name}" />
-	<meta property="twitter:player" content="/files/${file.id}">
+	<meta property="twitter:player" content="${fileUrl}">
 	<meta name="twitter:url" content="${fileUrl}" />
 	<meta name="twitter:title" content="${file.name}" />
 	<meta property="og:video:type" content="text/html">
