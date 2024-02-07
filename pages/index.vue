@@ -25,7 +25,12 @@ const { data: files, pending } = await useLazyFetch("/api/files");
         class="file-list__file-thumbnail"
         :src="`/files/${file.id}`"
       />
-      <Icon v-else name="material-symbols:note-rounded" size="5em" />
+      <Icon
+        v-else
+        class="file-list__file-thumbnail"
+        name="material-symbols:note-rounded"
+        size="5em"
+      />
       <p class="file-list__file-name" :title="file.name">
         {{ file.name }}
       </p>
