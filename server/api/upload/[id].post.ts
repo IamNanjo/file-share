@@ -74,6 +74,15 @@ export default defineEventHandler(async (e) => {
 
           width = dimensions.streams[0].width!;
           height = dimensions.streams[0].height!;
+
+          ffmpeg(path.join(filesPath!, id))
+            .screenshot({
+              filename: `${id}.png`,
+              folder: thumbnailsPath,
+              timestamps: [0],
+              size: "550x309",
+            })
+            .run();
         } catch (err) {
           console.error(err);
         }
@@ -89,15 +98,6 @@ export default defineEventHandler(async (e) => {
           sizeString: humanReadableFilesize(file.size),
         },
       });
-
-      ffmpeg(path.join(filesPath!, id))
-        .screenshot({
-          filename: `${id}.png`,
-          folder: thumbnailsPath,
-          timestamps: [0],
-          size: "550x309",
-        })
-        .run();
 
       return setResponseStatus(e, 201);
     })
