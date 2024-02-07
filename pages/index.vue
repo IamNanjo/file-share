@@ -77,7 +77,7 @@ const { data: files, pending } = await useLazyFetch("/api/files");
     padding: 1em;
     border: 1px solid var(--text-alt);
     border-radius: 6px;
-    box-shadow: 1px 1px 4px 4px black;
+    box-shadow: 1px 1px 6px 1px #000;
 
     &-thumbnail {
       max-width: 100%;
