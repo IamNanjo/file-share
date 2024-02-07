@@ -78,8 +78,12 @@ const { data: files, pending } = await useLazyFetch("/api/files");
     }
 
     &-name {
+      width: 80%;
       text-align: center;
       font-size: 1.25em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       transition: color 0.3s ease;
     }
 
