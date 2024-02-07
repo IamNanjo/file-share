@@ -54,7 +54,7 @@ onMounted(() => {
           :src="`/files/${file.id}`"
         />
         <Icon v-else name="material-symbols:note-rounded" size="5em" />
-        <p class="file-list__file-name">{{ file.name }}</p>
+        <p class="file-list__file-name" :title="file.name">{{ file.name }}</p>
         <div class="file-list__file-info">
           <button
             class="file-list__file-delete"
