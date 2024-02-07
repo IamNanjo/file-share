@@ -11,8 +11,6 @@ export default defineEventHandler((e) => {
       created: true,
       owner: { select: { id: true, name: true } },
     },
-    orderBy: {
-      created: "desc",
-    },
+    orderBy: { created: "desc" },
   });
 });
