@@ -64,6 +64,7 @@ onMounted(() => {
           <button
             class="file-list__file-delete"
             @click="(e) => deleteFile(e, index, file.id)"
+            title="Delete file"
           >
             <Icon name="material-symbols:delete-rounded" size="1.25em" />
           </button>
