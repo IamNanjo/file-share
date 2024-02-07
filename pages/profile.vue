@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-const { data: profile, pending } = await useLazyFetch("/api/profile");
+const { data: profile, pending } = await useFetch("/api/profile");
 const files = ref(profile.value ? profile.value.files : []);
 
 async function deleteFile(e: Event, index: number, id: string) {

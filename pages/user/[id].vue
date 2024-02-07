@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const route = useRoute();
 
-const { data: profile, pending } = await useLazyFetch(
+const { data: profile, pending } = await useFetch(
   `/api/user/${route.params.id}`
 );
 </script>
