@@ -76,7 +76,7 @@ const { data: files, pending } = await useLazyFetch("/api/files");
 
     &-thumbnail {
       max-width: 100%;
-      max-height: 9em;
+      height: 9em;
     }
 
     &-name {
