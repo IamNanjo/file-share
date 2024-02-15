@@ -9,12 +9,15 @@ defineProps<{ url: string }>();
   </div>
 </template>
 
-<style>
+<style style="scss">
 .video-player {
   display: flex;
   flex-direction: column;
-  max-width: 98%;
-  aspect-ratio: 16 / 9;
+  max-width: 90%;
+  height: 80svh;
+
+  &__video {
+  }
 
   > * {
     width: 100%;
