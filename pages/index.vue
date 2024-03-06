@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { data: files, pending } = await useFetch("/api/files");
+const { data: files, pending } = await useFetch("/api/files", {
+  server: false,
+});
 </script>
 
 <template>
