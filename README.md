@@ -23,6 +23,20 @@ which can be used on social media platforms such as [Discord](https://discord.co
 which has a video player in it. This has been tested with [Discord](https://discord.com/),
 but should work with other social media sites that support [OG](https://ogp.me/) metadata.
 
+## Screenshots
+
+File list:
+
+![File list](screenshots/file-list.png)
+
+Theme select:
+
+![Theme select](screenshots/theme-select.png)
+
+Upload page:
+
+![Upload page](screenshots/upload.png)
+
 ## Configuration
 
 The server configuration is done using the following environment variables:
