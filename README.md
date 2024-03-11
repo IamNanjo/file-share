@@ -9,6 +9,11 @@ Files can currently only be deleted by the owner,
 but in the future there will be an admin UI where the admin(s) can delete any files.
 There will also be a configurable maximum file size that the admin can control.
 
+The website has 3 different themes: light, dark and black (OLED).
+
+The default foreground accent color is pastel red (#FF6961),
+but can easily be changed in the CSS variables within app.vue
+
 There is also a /watch page for video files,
 which will have a custom video player in a future update,
 but for now just has the default HTML video player.
