@@ -24,7 +24,7 @@ const dragging = ref(false);
 const uploading = ref(false);
 
 function addFiles(fileList: FileList) {
-  const blockedFileTypes = ["text/html", "application/x-httpd-php", ""];
+  const blockedFileTypes = ["text/html", "application/x-httpd-php"];
 
   for (const file of fileList) {
     if (file.size === 0 || blockedFileTypes.includes(file.type)) continue;
