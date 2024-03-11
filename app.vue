@@ -92,7 +92,7 @@ onMounted(() => {
 
   &-thumb {
     background-color: var(--text-alt);
-    border-radius: calc($size * 2);
+    border-radius: $size * 2;
   }
 }
 
@@ -110,6 +110,7 @@ onMounted(() => {
   --text-alt: #666666;
   --ff-primary: "Roboto", sans-serif;
   --ff-mono: "JetBrains Mono", "JetBrains Mono NL", monospace;
+  --shadow-color: black;
 }
 
 :root.black {
@@ -124,6 +125,7 @@ onMounted(() => {
   --bg-raise-1: #ffffff;
   --text-primary: black;
   --text-alt: #aaaaaa;
+  --shadow-color: #7f7f7f;
 }
 
 #__nuxt {

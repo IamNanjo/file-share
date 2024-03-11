@@ -29,7 +29,7 @@
     right: 1em;
     transform: translate(100%, -100%);
     border-radius: 6px;
-    box-shadow: 1px 1px 4px 2px black;
+    box-shadow: 1px 1px 4px 2px var(--shadow-color);
 
     > * {
       display: flex;
