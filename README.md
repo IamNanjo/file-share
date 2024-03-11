@@ -23,6 +23,9 @@ which can be used on social media platforms such as [Discord](https://discord.co
 which has a video player in it. This has been tested with [Discord](https://discord.com/),
 but should work with other social media sites that support [OG](https://ogp.me/) metadata.
 
+The app has been developed using [Bun](https://bun.sh/),
+and the npm scripts are created for it as well.
+
 ## Screenshots
 
 File list:
