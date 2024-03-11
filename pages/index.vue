@@ -79,7 +79,7 @@ const { data: files, pending } = await useFetch("/api/files", {
     padding: 1em;
     border: 1px solid var(--text-alt);
     border-radius: 6px;
-    box-shadow: 1px 1px 6px 1px #000;
+    box-shadow: 1px 1px 6px 1px var(--shadow-color);
 
     &-thumbnail {
       max-width: 100%;
