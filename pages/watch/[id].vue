@@ -1,8 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const route = useRoute();
+const { data } = await useLazyFetch(`/api/meta/${route.params.id}`);
+
+if (data.value && data.value.meta) {
+  useHeadSafe({ meta: [...data.value.meta, {name: "author", content: ""}] });
+}
+</script>
 
 <template>
   <main>
-    <VideoPlayer :url="`/files/${$route.params.id}`" />
+    <VideoPlayer :url="`/files/${route.params.id}`" />
   </main>
 </template>
 
