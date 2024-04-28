@@ -44,6 +44,15 @@ export default defineEventHandler(async (e) => {
       },
     }),
     fileFilter: (req, file, cb) => {
+      req.on("close", () => {
+        if (!req.complete) {
+          db.file
+            .delete({ where: { id: upload.id } })
+            .catch(console.error)
+            .finally(() => cb(new Error("Upload cancelled")));
+        }
+      });
+
       const blockedFileTypes = ["text/html", "application/x-httpd-php"];
 
       blockedFileTypes.includes(file.mimetype)
