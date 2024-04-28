@@ -191,7 +191,7 @@ onMounted(() => {
           :key="fileEntry.id || index"
           v-for="(fileEntry, index) in fileEntries"
           class="upload-form__file"
-          :title="`${fileEntry.progress * 100} %`"
+          :title="`${fileEntry.progress} %`"
         >
           <div class="upload-form__file-name">
             <a v-if="uploading || fileEntry.url" :href="fileEntry.url">{{
