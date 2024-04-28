@@ -103,7 +103,7 @@ async function handleUpload() {
     const xhr = new XMLHttpRequest();
 
     xhr.upload.addEventListener("progress", (e) => {
-      const progress = Math.floor(e.loaded / e.total) * 100;
+      const progress = Math.floor((e.loaded / e.total) * 100);
       fileEntries.value[i].progress = progress;
     });
 
@@ -191,6 +191,7 @@ onMounted(() => {
           :key="fileEntry.id || index"
           v-for="(fileEntry, index) in fileEntries"
           class="upload-form__file"
+          :title="`${fileEntry.progress * 100} %`"
         >
           <div class="upload-form__file-name">
             <a v-if="uploading || fileEntry.url" :href="fileEntry.url">{{
@@ -362,6 +363,7 @@ main {
       background-color: transparent;
       border: 1px solid var(--text-alt);
       border-radius: 4px;
+      text-shadow: 1px 1px 2px black;
 
       input,
       a {
