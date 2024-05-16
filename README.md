@@ -40,6 +40,12 @@ Upload page:
 
 ![Upload page](screenshots/upload.png)
 
+## Database
+
+This app uses Prisma ORM and SQLite 3 as the database
+
+![Database EER diagram](db-diagram.svg)
+
 ## Configuration
 
 The server configuration is done using the following environment variables:
