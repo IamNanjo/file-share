@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-const { data: profile, pending } = await useFetch("/api/profile");
+const { data: profile, status } = await useFetch("/api/profile");
 const files = ref(profile.value ? profile.value.files : []);
 
 async function deleteFile(e: Event, index: number, id: string) {
@@ -27,7 +27,7 @@ onMounted(() => {
     </header>
 
     <TransitionGroup
-      v-if="!pending && profile"
+      v-if="status !== 'pending' && profile"
       class="file-list"
       name="list"
       tag="div"

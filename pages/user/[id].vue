@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const route = useRoute();
 
-const { data: profile, pending } = await useFetch(
+const { data: profile, status } = await useFetch(
   `/api/user/${route.params.id}`
 );
 </script>
 
 <template>
-  <main v-if="!pending && profile">
+  <main v-if="status !== 'pending' && profile">
     <header class="profile-header">
       <h1>{{ profile.name }}'s files</h1>
     </header>

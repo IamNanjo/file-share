@@ -1,11 +1,11 @@
 <script setup lang="ts">
-const { data: files, pending } = await useFetch("/api/files", {
+const { data: files, status } = await useFetch("/api/files", {
   server: false,
 });
 </script>
 
 <template>
-  <main v-if="!pending" class="file-list">
+  <main v-if="status !== 'pending'" class="file-list">
     <NuxtLink
       v-for="file in files"
       :key="file.id"
