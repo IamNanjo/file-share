@@ -8,6 +8,16 @@ import getServerSession from "~/server/getServerSession";
 const filesPath = process.env.FILESHARE_FILES_PATH;
 const thumbnailsPath = process.env.FILESHARE_THUMBNAILS_PATH;
 
+if (!filesPath) {
+    console.error("FILESHARE_FILES_PATH not defined");
+    process.exit(1);
+}
+
+if (!thumbnailsPath) {
+    console.error("FILESHARE_THUMBNAILS_PATH not defined");
+    process.exit(1);
+}
+
 function humanReadableFilesize(bytes: number) {
     const sizes = ["B", "KB", "MB", "GB", "TB"];
 
@@ -35,13 +45,8 @@ export default defineEventHandler(async (e) => {
 
     const multerUpload = multer({
         storage: multer.diskStorage({
-            destination: (_, __, cb) => {
-                if (!filesPath) throw new Error("No path for files defined");
-                cb(null, filesPath);
-            },
-            filename: async (_, __, cb) => {
-                cb(null, id);
-            },
+            destination: (_, __, cb) => cb(null, filesPath),
+            filename: (_, __, cb) => cb(null, id),
         }),
         fileFilter: (req, file, cb) => {
             req.on("close", () => {
@@ -73,11 +78,14 @@ export default defineEventHandler(async (e) => {
             let width = 0;
             let height = 0;
 
-            if (file.mimetype.includes("video")) {
+            if (
+                file.mimetype.startsWith("video") ||
+                file.mimetype.startsWith("image")
+            ) {
                 try {
-                    const dimensions: FfprobeData = await new Promise(
+                    const dimensions = await new Promise<FfprobeData>(
                         (resolve, reject) =>
-                            ffmpeg(path.join(filesPath!, id)).ffprobe(
+                            ffmpeg(path.join(filesPath, id)).ffprobe(
                                 (err, data) => {
                                     if (err) {
                                         reject(err);
@@ -85,19 +93,23 @@ export default defineEventHandler(async (e) => {
                                     resolve(data);
                                 }
                             )
-                    );
+                    ).catch((err) => {
+                        console.error(err);
+                        process.exit(1);
+                    });
 
-                    width = dimensions.streams[0].width!;
-                    height = dimensions.streams[0].height!;
+                    const w = dimensions.streams[0].width;
+                    const h = dimensions.streams[0].height;
 
-                    ffmpeg(path.join(filesPath!, id))
-                        .screenshot({
-                            filename: `${id}.png`,
-                            folder: thumbnailsPath,
-                            timestamps: [0],
-                            size: "550x309",
-                        })
-                        .run();
+                    if (w) width = w;
+                    if (h) height = h;
+
+                    ffmpeg(path.join(filesPath, id)).screenshot({
+                        filename: `${id}.png`,
+                        folder: thumbnailsPath,
+                        timestamps: [0],
+                        size: "640x360",
+                    });
                 } catch (err) {
                     console.error(err);
                 }
