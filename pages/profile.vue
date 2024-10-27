@@ -1,23 +1,56 @@
 <script setup lang="ts">
 definePageMeta({ middleware: "auth" });
 
-const { data: profile, status } = await useFetch("/api/profile");
-const files = ref(profile.value ? profile.value.files : []);
+type ParsedProfile = {
+    id: string;
+    name: string;
+    files: {
+        id: string;
+        name: string;
+        type: string | null;
+        sizeString: string;
+        created: {
+            relative: string;
+            absolute: string;
+        };
+    }[];
+};
 
-async function deleteFile(e: Event, index: number, id: string) {
-    e.preventDefault();
-    e.stopPropagation();
+const contextMenuOpen = useContextMenu();
 
-    if (!profile.value) return;
+const placeholderProfile = { id: "", name: "", files: [] };
 
-    await $fetch(`/api/files/${id}`, { method: "delete" });
+const files = ref<ParsedProfile["files"]>([]);
+const filesRef = computed(() => files);
 
-    files.value.splice(index, 1);
-}
+const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
+    async () => {
+        const res = await $fetch("/api/profile");
 
-onMounted(() => {
-    files.value = profile.value ? profile.value.files : [];
-});
+        if (res === null) return placeholderProfile;
+
+        return {
+            ...res,
+            files: res.files.map((file) => {
+                const date = new Date(file.created);
+                const parsed = {
+                    ...file,
+                    created: {
+                        relative: getRelativeTimestamp(date),
+                        absolute: date.toLocaleString(navigator.language),
+                    },
+                };
+                files.value.push(parsed);
+                return parsed;
+            }),
+        };
+    },
+    {
+        server: false,
+        default: () => placeholderProfile,
+        deep: false,
+    }
+);
 </script>
 
 <template>
@@ -43,61 +76,82 @@ onMounted(() => {
                         : `/embed/${file.id}`
                 "
             >
-                <img
-                    v-if="file.type && file.type.startsWith('video')"
-                    class="file-list__file-thumbnail"
-                    :src="`/thumbnails/${file.id}.png`"
-                />
-                <img
-                    v-else-if="file.type && file.type.startsWith('image')"
-                    class="file-list__file-thumbnail"
-                    :src="`/files/${file.id}`"
-                />
-                <Icon
-                    v-else
-                    class="file-list__file-thumbnail"
-                    name="material-symbols:note-rounded"
-                    size="5em"
-                />
-                <p class="file-list__file-name" :title="file.name">
-                    {{ file.name }}
-                </p>
+                <div class="file-list__file-thumbnail">
+                    <img
+                        v-if="file.type && file.type.startsWith('video')"
+                        :src="`/thumbnails/${file.id}.png`"
+                    />
+                    <img
+                        v-else-if="file.type && file.type.startsWith('image')"
+                        :src="`/files/${file.id}`"
+                    />
+                    <Icon
+                        v-else
+                        name="material-symbols:note-rounded"
+                        size="5em"
+                    />
+                </div>
                 <div class="file-list__file-info">
+                    <p class="file-list__file-name" :title="file.name">
+                        {{ file.name }}
+                    </p>
                     <button
-                        class="file-list__file-delete"
-                        @click="(e) => deleteFile(e, index, file.id)"
-                        title="Delete file"
+                        @click.stop.prevent="(_) => openContextMenu(file.id)"
                     >
-                        <Icon
-                            name="material-symbols:delete-rounded"
-                            size="1.25em"
-                        />
+                        <Icon name="material-symbols:more-vert" size="1.25em" />
                     </button>
-                    <a
-                        class="file-list__file-size"
-                        :download="file.name"
-                        :href="`/files/${file.id}`"
-                        :title="`Download file (${file.sizeString})`"
+                </div>
+                <div class="file-list__file-info">
+                    <div></div>
+                    <p :title="file.created.absolute">
+                        {{ file.created.relative }}
+                    </p>
+                </div>
+                <Transition>
+                    <div
+                        v-if="contextMenuOpen === file.id"
+                        class="file-list__file-menu"
                     >
-                        <Icon
-                            name="material-symbols:download-rounded"
-                            size="1.25em"
-                        />
-                        <p>{{ file.sizeString }}</p>
-                    </a>
-                </div></NuxtLink
-            >
+                        <NuxtLink
+                            :download="file.name"
+                            :href="`/files/${file.id}`"
+                            :title="`Download file (${file.sizeString})`"
+                            :external="true"
+                        >
+                            <Icon
+                                name="material-symbols:download-rounded"
+                                size="1.25em"
+                            />
+                            <p>Download ({{ file.sizeString }})</p>
+                        </NuxtLink>
+                        <button
+                            @click.stop.prevent="(_) => copyEmbedLink(file.id)"
+                        >
+                            <Icon
+                                name="material-symbols:content-copy-rounded"
+                                size="1.25em"
+                            />
+                            <p>Copy embed link</p>
+                        </button>
+                        <button
+                            @click.stop.prevent="
+                                (_) => deleteFile(filesRef, index, file.id)
+                            "
+                        >
+                            <Icon
+                                name="material-symbols:delete-rounded"
+                                size="1.25em"
+                            />
+                            <p>Delete file</p>
+                        </button>
+                    </div>
+                </Transition>
+            </NuxtLink>
         </TransitionGroup>
     </main>
 </template>
 
 <style scoped lang="scss">
-main {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
 .profile-header {
     padding-block: 2em;
     font-size: 1.5em;

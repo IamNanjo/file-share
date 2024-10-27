@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { data: files, status } = useAsyncData(
+const { session } = useAuth();
+
+const { data: files, status } = await useAsyncData(
     async () => {
         const res = await $fetch("/api/files").catch((err) =>
             console.error(err)
@@ -27,157 +29,123 @@ const { data: files, status } = useAsyncData(
     { server: false }
 );
 
-const contextMenuOpen = ref("");
+const filesRef = computed(() => files);
 
-function getRelativeTimestamp(date: Date) {
-    const now = Date.now();
-    const diffMs = now - date.getTime(); // Difference in milliseconds
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHrs = Math.floor(diffMin / 60);
-    const diffDays = Math.floor(diffHrs / 24);
-
-    if (diffSec < 60) return `${diffSec} seconds ago`;
-    if (diffMin < 60) return `${diffMin} minutes ago`;
-    if (diffHrs < 24) return `${diffHrs} hours ago`;
-    if (diffDays < 7) return `${diffDays} days ago`;
-
-    return date.toLocaleDateString(); // Fallback for dates over a week
-}
-
-function openContextMenu(id: string) {
-    contextMenuOpen.value = id;
-
-    document.addEventListener("mouseup", () => (contextMenuOpen.value = ""), {
-        once: true,
-    });
-    document.addEventListener("touchend", () => (contextMenuOpen.value = ""), {
-        once: true,
-    });
-}
-
-function showContextMenu(e: Event, id: string) {
-    const el = e.currentTarget as HTMLAnchorElement | null;
-    const _id = id;
-
-    if (!el) return;
-
-    const addEvent = el?.addEventListener;
-
-    addEvent("mouseup", () => openContextMenu(_id), {
-        once: true,
-    });
-    addEvent("touchend", () => openContextMenu(_id), {
-        once: true,
-    });
-}
-
-function copyEmbedLink(id: string) {
-    navigator.clipboard.writeText(`${window.location.origin}/embed/${id}`);
-}
-
-async function deleteFile(e: Event, index: number, id: string) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!files.value) return;
-
-    await $fetch(`/api/files/${id}`, { method: "delete" });
-
-    files.value.splice(index, 1);
-}
+const contextMenuOpen = useContextMenu();
 </script>
 
 <template>
-    <main v-if="status !== 'pending'" class="file-list">
-        <NuxtLink
-            v-for="(file, index) in files"
-            :key="file.id"
-            class="file-list__file"
-            :external="true"
-            :to="
-                file.type && file.type.startsWith('video')
-                    ? `/watch/${file.id}`
-                    : `/embed/${file.id}`
-            "
-            @click.right.prevent="(e) => showContextMenu(e, file.id)"
-        >
-            <img
-                v-if="file.type && file.type.startsWith('video')"
-                class="file-list__file-thumbnail"
-                :src="`/thumbnails/${file.id}.png`"
-            />
-            <img
-                v-else-if="file.type && file.type.startsWith('image')"
-                class="file-list__file-thumbnail"
-                :src="`/files/${file.id}`"
-            />
-            <Icon
-                v-else
-                class="file-list__file-thumbnail"
-                name="material-symbols:note-rounded"
-                size="5em"
-            />
-            <p class="file-list__file-name" :title="file.name">
-                {{ file.name }}
-            </p>
-            <div class="file-list__file-info">
-                <NuxtLink
-                    class="file-list__file-owner"
-                    :to="`/user/${file.owner.id}`"
-                    :title="`Uploader: ${file.owner.name}`"
-                >
-                    {{ file.owner.name }}
-                </NuxtLink>
-                <p :title="file.created.absolute">
-                    {{ file.created.relative }}
-                </p>
-            </div>
-            <Transition>
-                <div
-                    v-if="contextMenuOpen === file.id"
-                    class="file-list__file-menu"
-                >
-                    <a
-                        :download="file.name"
-                        :href="`/files/${file.id}`"
-                        :title="`Download file (${file.sizeString})`"
-                    >
-                        <Icon
-                            name="material-symbols:download-rounded"
-                            size="1.25em"
-                        />
-                        <p>Download ({{ file.sizeString }})</p>
-                    </a>
-                    <button @click.stop.prevent="(_) => copyEmbedLink(file.id)">
-                        <Icon
-                            name="material-symbols:content-copy-rounded"
-                            size="1.25em"
-                        />
-                        <p>Copy embed link</p>
-                    </button>
+    <main v-if="status !== 'pending'">
+        <TransitionGroup class="file-list" name="list" tag="div">
+            <NuxtLink
+                v-for="(file, index) in files"
+                :key="file.id"
+                class="file-list__file"
+                :external="true"
+                :to="
+                    file.type && file.type.startsWith('video')
+                        ? `/watch/${file.id}`
+                        : `/embed/${file.id}`
+                "
+            >
+                <div class="file-list__file-thumbnail">
+                    <img
+                        v-if="file.type && file.type.startsWith('video')"
+                        :src="`/thumbnails/${file.id}.png`"
+                    />
+                    <img
+                        v-else-if="file.type && file.type.startsWith('image')"
+                        :src="`/files/${file.id}`"
+                    />
+                    <Icon
+                        v-else
+                        name="material-symbols:note-rounded"
+                        size="5em"
+                    />
+                </div>
+                <div class="file-list__file-info">
+                    <p class="file-list__file-name" :title="file.name">
+                        {{ file.name }}
+                    </p>
                     <button
-                        @click.stop.prevent="
-                            (e) => deleteFile(e, index, file.id)
-                        "
+                        @click.stop.prevent="(_) => openContextMenu(file.id)"
                     >
-                        <Icon
-                            name="material-symbols:delete-rounded"
-                            size="1.25em"
-                        />
-                        <p>Delete file</p>
+                        <Icon name="material-symbols:more-vert" size="1.25em" />
                     </button>
                 </div>
-            </Transition>
-        </NuxtLink>
+                <div class="file-list__file-info">
+                    <NuxtLink
+                        class="file-list__file-owner"
+                        :to="`/user/${file.owner.id}`"
+                        :title="`Uploader: ${file.owner.name}`"
+                    >
+                        {{ file.owner.name }}
+                    </NuxtLink>
+                    <p :title="file.created.absolute">
+                        {{ file.created.relative }}
+                    </p>
+                </div>
+                <Transition>
+                    <div
+                        v-if="contextMenuOpen === file.id"
+                        class="file-list__file-menu"
+                    >
+                        <NuxtLink
+                            :download="file.name"
+                            :href="`/files/${file.id}`"
+                            :title="`Download file (${file.sizeString})`"
+                            :external="true"
+                        >
+                            <Icon
+                                name="material-symbols:download-rounded"
+                                size="1.25em"
+                            />
+                            <p>Download ({{ file.sizeString }})</p>
+                        </NuxtLink>
+                        <button
+                            @click.stop.prevent="(_) => copyEmbedLink(file.id)"
+                        >
+                            <Icon
+                                name="material-symbols:content-copy-rounded"
+                                size="1.25em"
+                            />
+                            <p>Copy embed link</p>
+                        </button>
+                        <button
+                            v-if="
+                                session?.user &&
+                                session.user.id === file.owner.id
+                            "
+                            @click.stop.prevent="
+                                (_) => deleteFile(filesRef, index, file.id)
+                            "
+                        >
+                            <Icon
+                                name="material-symbols:delete-rounded"
+                                size="1.25em"
+                            />
+                            <p>Delete file</p>
+                        </button>
+                    </div>
+                </Transition>
+            </NuxtLink>
+        </TransitionGroup>
     </main>
 </template>
 
 <style lang="scss">
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
 .file-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
-    align-content: start;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 2em;
     width: 100%;
     padding: 1em;
@@ -189,8 +157,9 @@ async function deleteFile(e: Event, index: number, id: string) {
         justify-content: space-between;
         align-items: center;
         gap: 1em;
-        width: 100%;
-        height: 16.5em;
+        width: 22em;
+        max-width: 100%;
+        height: 18em;
         padding: 1em;
         border-radius: 6px;
 
@@ -199,11 +168,9 @@ async function deleteFile(e: Event, index: number, id: string) {
             top: 50%;
             left: 50%;
             display: grid;
-            grid-template-columns: 1.25em 1fr;
+            grid-template-columns: 1.5em 1fr;
             align-items: center;
-            gap: 0.5em;
             background-color: var(--bg-raise-1);
-            padding: 0.5em;
             border: 1px solid var(--text-alt);
             border-radius: 4px;
             font-size: 1.25rem;
@@ -212,41 +179,47 @@ async function deleteFile(e: Event, index: number, id: string) {
 
             > * {
                 display: contents;
-                transition: color 0.2s ease;
-
-                &:hover {
-                    color: rgb(var(--fg-primary));
-                }
 
                 > * {
                     min-width: max-content;
-                    padding: 0.25em 0.5em;
+                    width: 100%;
+                    padding: 0.5em 1em;
                     text-wrap: nowrap;
                 }
             }
         }
 
         &-thumbnail {
-            max-width: 100%;
-            height: 9em;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 1em;
+            max-height: 13em;
+            object-fit: contain;
+
+            > img {
+                height: auto;
+                max-height: 100%;
+            }
         }
 
         &-name {
             --font-size: 1.25em;
-            width: 90%;
+            width: 100%;
             min-height: var(--font-size);
             font-size: var(--font-size);
             overflow-x: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            transition: color 0.3s ease;
         }
 
         &-info {
             display: flex;
             justify-content: space-between;
             gap: 0.25em;
-            width: 90%;
+            width: 100%;
         }
 
         &-owner {
@@ -262,11 +235,6 @@ async function deleteFile(e: Event, index: number, id: string) {
         &-owner {
             color: var(--text-alt);
             font-size: 1.125em;
-            transition: color 0.3s ease;
-
-            &:hover {
-                color: rgb(var(--fg-primary));
-            }
         }
     }
 }
