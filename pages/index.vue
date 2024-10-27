@@ -48,8 +48,6 @@ function getRelativeTimestamp(date: Date) {
 function openContextMenu(id: string) {
     contextMenuOpen.value = id;
 
-    console.log(contextMenuOpen.value);
-
     document.addEventListener("mouseup", () => (contextMenuOpen.value = ""), {
         once: true,
     });
