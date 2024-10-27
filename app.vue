@@ -152,6 +152,7 @@ html {
 html,
 body,
 main {
+    position: relative;
     min-height: 100%;
 }
 
@@ -162,11 +163,6 @@ body {
     font-family: var(--ff-primary);
     overflow-x: hidden;
     z-index: 0;
-}
-
-body,
-main {
-    position: relative;
 }
 
 main {
