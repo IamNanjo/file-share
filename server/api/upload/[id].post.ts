@@ -58,7 +58,15 @@ export default defineEventHandler(async (e) => {
                 }
             });
 
-            const blockedFileTypes = ["text/html", "application/x-httpd-php"];
+            const blockedFileTypes = [
+                "text/html",
+                "text/php",
+                "text/x-php",
+                "application/php",
+                "application/x-php",
+                "application/x-httpd-php",
+                "application/x-httpd-php-source",
+            ];
 
             blockedFileTypes.includes(file.mimetype)
                 ? cb(new Error("These file types are not accepted"))
