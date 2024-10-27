@@ -86,8 +86,6 @@ async function deleteFile(e: Event, index: number, id: string) {
 
     files.value.splice(index, 1);
 }
-
-onBeforeUnmount(() => {});
 </script>
 
 <template>
