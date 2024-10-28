@@ -96,19 +96,23 @@ const contextMenuOpen = useContextMenu();
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
                         >
-                            <Icon
-                                name="material-symbols:download-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:download-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Download ({{ file.sizeString }})</p>
                         </NuxtLink>
                         <button
                             @click.stop.prevent="(_) => copyEmbedLink(file.id)"
                         >
-                            <Icon
-                                name="material-symbols:content-copy-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:content-copy-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Copy embed link</p>
                         </button>
                         <button
@@ -120,10 +124,12 @@ const contextMenuOpen = useContextMenu();
                                 (_) => deleteFile(filesRef, index, file.id)
                             "
                         >
-                            <Icon
-                                name="material-symbols:delete-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:delete-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Delete file</p>
                         </button>
                     </div>
@@ -168,8 +174,8 @@ main {
             top: 50%;
             left: 50%;
             display: grid;
-            grid-template-columns: 1.5em 1fr;
-            align-items: center;
+            grid-template-columns: 2.5em 1fr;
+            align-content: center;
             background-color: var(--bg-raise-1);
             border: 1px solid var(--text-alt);
             border-radius: 4px;
@@ -183,8 +189,20 @@ main {
                 > * {
                     min-width: max-content;
                     width: 100%;
-                    padding: 0.5em 1em;
+                    padding-block: 0.5em;
                     text-wrap: nowrap;
+
+                    &:first-child {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding-left: 0.75em;
+                        padding-right: 0.25em;
+                    }
+                    &:last-child {
+                        padding-left: 0.25em;
+                        padding-right: 1em;
+                    }
                 }
             }
         }
