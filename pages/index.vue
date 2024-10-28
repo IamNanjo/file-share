@@ -202,6 +202,7 @@ main {
             > img {
                 height: auto;
                 max-height: 100%;
+                border-radius: 4px;
             }
         }
 
