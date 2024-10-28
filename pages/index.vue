@@ -41,7 +41,9 @@ const contextMenuOpen = useContextMenu();
                 v-for="(file, index) in files"
                 :key="file.id"
                 class="file-list__file"
-                :external="true"
+                :external="
+                    file.type && file.type.startsWith('video') ? false : true
+                "
                 :to="
                     file.type && file.type.startsWith('video')
                         ? `/watch/${file.id}`
