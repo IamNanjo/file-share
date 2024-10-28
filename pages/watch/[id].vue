@@ -13,6 +13,8 @@ const { data, status } = useLazyAsyncData(
     },
     { server: false }
 );
+
+const newMessageParentNode = ref(" ");
 </script>
 
 <template>
@@ -46,17 +48,28 @@ const { data, status } = useLazyAsyncData(
                 action="/api/comment"
                 class="video__comment-form"
             >
-                <div class="video__new-comment">
+                <div
+                    class="video__new-comment"
+                    :data-replicated-value="newMessageParentNode"
+                >
                     <textarea
                         name="content"
                         placeholder="New comment..."
                         rows="1"
-                        oninput="this.parentNode.dataset.replicatedValue = this.value"
+                        @input="
+                            (e) =>
+                                (newMessageParentNode = (
+                                    e.currentTarget as HTMLTextAreaElement
+                                ).value)
+                        "
                     ></textarea>
                 </div>
                 <div class="video__comment-buttons">
                     <div class="video__comment-cancel">
-                        <button type="reset">
+                        <button
+                            type="reset"
+                            @click="() => (newMessageParentNode = ' ')"
+                        >
                             <Icon
                                 name="material-symbols:close-rounded"
                                 size="1.25em"
@@ -118,6 +131,15 @@ main {
     &__info {
         justify-content: space-between;
         font-size: 1.25rem;
+
+        gap: 1em;
+
+        > :first-child {
+            text-align: start;
+        }
+        > :last-child {
+            text-align: end;
+        }
 
         > *:has(.iconify) {
             display: flex;
