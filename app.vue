@@ -120,8 +120,7 @@ onMounted(() => {
     --fg-primary: 255, 105, 97;
     --text-primary: white;
     --text-alt: #666666;
-    --ff-primary: "Roboto", sans-serif;
-    --ff-mono: "JetBrains Mono", "JetBrains Mono NL", monospace;
+    --ff-primary: system-ui, sans-serif;
     --shadow-color: black;
 }
 
@@ -192,12 +191,6 @@ button {
     text-decoration: none;
     text-indent: 0;
     cursor: pointer;
-}
-
-pre,
-code,
-kbd {
-    font-family: var(--ff-mono);
 }
 
 a,
