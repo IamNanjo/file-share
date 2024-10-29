@@ -10,6 +10,7 @@ export default defineEventHandler(async (e) => {
             sizeString: true,
             owner: { select: { id: true, name: true } },
             comments: {
+                orderBy: { created: "desc" },
                 select: {
                     id: true,
                     content: true,
