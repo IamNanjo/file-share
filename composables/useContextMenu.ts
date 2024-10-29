@@ -1,1 +1,1 @@
-export default () => useState("contextMenu", () => "");
+export default () => useState<string | number>("contextMenu", () => "");
