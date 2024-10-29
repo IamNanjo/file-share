@@ -23,7 +23,9 @@ const newMessageParentNode = ref(" ");
         <template v-if="status === 'success' && data !== null">
             <div class="video__info">
                 <div>{{ data.name }}</div>
-                <div>{{ data.created }}</div>
+                <div :title="data.created.absolute">
+                    {{ data.created.relative }}
+                </div>
             </div>
             <div class="video__info">
                 <NuxtLink :to="`/user/${data.owner.id}`">
