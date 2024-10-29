@@ -35,6 +35,7 @@ const newMessageParentNode = ref(" ");
                     :download="data.name"
                     :to="`/files/${route.params.id}`"
                     :external="true"
+                    :title="`Download file (${data.sizeString})`"
                 >
                     <Icon
                         name="material-symbols:download-rounded"
