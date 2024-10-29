@@ -117,19 +117,23 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
                         >
-                            <Icon
-                                name="material-symbols:download-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:download-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Download ({{ file.sizeString }})</p>
                         </NuxtLink>
                         <button
                             @click.stop.prevent="(_) => copyEmbedLink(file.id)"
                         >
-                            <Icon
-                                name="material-symbols:content-copy-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:content-copy-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Copy embed link</p>
                         </button>
                         <button
@@ -137,10 +141,12 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                                 (_) => deleteFile(filesRef, index, file.id)
                             "
                         >
-                            <Icon
-                                name="material-symbols:delete-rounded"
-                                size="1.25em"
-                            />
+                            <div>
+                                <Icon
+                                    name="material-symbols:delete-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
                             <p>Delete file</p>
                         </button>
                     </div>
