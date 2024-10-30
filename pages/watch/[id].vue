@@ -213,15 +213,7 @@ async function postComment() {
                             class="video__comment-menu"
                         >
                             <button
-                                @click="
-                                    () =>
-                                        copyToClipboard(
-                                            String(
-                                                session?.user?.id ===
-                                                    comment.owner.id
-                                            )
-                                        )
-                                "
+                                @click="() => copyToClipboard(comment.content)"
                             >
                                 <div>
                                     <Icon
