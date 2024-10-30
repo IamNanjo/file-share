@@ -3,6 +3,7 @@ export default function getRelativeTimestamp(date: Date) {
     const diffMs = now - date.getTime();
 
     const diffSec = Math.floor(diffMs / 1000);
+    if (diffSec < 1) return "now";
     if (diffSec < 60) return `${diffSec} second${diffSec !== 1 ? "s" : ""} ago`;
 
     const diffMin = Math.floor(diffSec / 60);
