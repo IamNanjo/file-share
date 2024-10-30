@@ -13,7 +13,7 @@ export default defineEventHandler(async (e) => {
         e,
         z.object({
             fileId: z.string().min(8),
-            authorId: z.string().length(10),
+            authorId: z.string().min(10),
             content: z.string().min(1),
         }).parse
     );
