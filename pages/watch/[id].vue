@@ -294,7 +294,7 @@ main {
         gap: 0.5em;
         width: 100%;
         max-width: 60rem;
-        margin-inline: auto;
+        padding-bottom: 2em;
 
         button {
             display: flex;
@@ -361,11 +361,16 @@ main {
             justify-content: space-between;
             gap: 1em;
             width: 100%;
-        }
 
-        &-info > :first-child {
-            color: var(--text-alt);
-            font-size: 1rem;
+            > :first-child {
+                color: var(--text-alt);
+                font-size: 1rem;
+            }
+
+            > :last-child {
+                display: flex;
+                align-items: center;
+            }
         }
 
         &-menu {
