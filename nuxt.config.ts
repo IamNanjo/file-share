@@ -30,7 +30,7 @@ export default defineNuxtConfig({
   },
 
   plausible: {
-    apiHost: "https://plausible.nanjo.tech",
+    apiHost: "https://plausible.nanjo.dev",
   },
 
   authJs: {
