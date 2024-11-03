@@ -10,5 +10,9 @@ export default async function handleAuthentication({
 
     auth.value = { ...auth.value, authenticated: true, id, name };
 
-    return navigateTo(route.redirectedFrom);
+    return navigateTo(
+        route.query.redirect
+            ? (route.query.redirect as string)
+            : route.redirectedFrom
+    );
 }
