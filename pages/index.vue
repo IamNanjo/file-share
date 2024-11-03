@@ -97,6 +97,7 @@ const contextMenuOpen = useContextMenu();
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
+                            @click.stop=""
                         >
                             <div>
                                 <Icon
