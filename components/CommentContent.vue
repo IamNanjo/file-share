@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { VNodeRef } from "vue";
-
 defineProps<{
     id: number;
     content: string;
@@ -17,7 +15,6 @@ function checkOverflow() {
     const element = contentRef.value;
 
     overflowing.value = element.clientHeight < element.scrollHeight;
-    console.log("Checked overflow", overflowing.value, element);
 }
 
 onMounted(() => {
