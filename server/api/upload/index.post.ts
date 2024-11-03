@@ -10,11 +10,9 @@ const bodySchema = z.object({
 });
 
 export default defineEventHandler(async (e) => {
-    const body = await readValidatedBody(e, (body) =>
-        bodySchema.parseAsync(body)
-    );
-    const session = e.context.session;
+    const body = await readValidatedBody(e, (body) => bodySchema.parse(body));
 
+    const session = e.context.session;
     if (!session) return setResponseStatus(e, 401);
 
     const fullFileName = randomBytes(7).toString("base64url") + body.extension;
