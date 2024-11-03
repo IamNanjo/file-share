@@ -1,6 +1,4 @@
 <script setup lang="ts">
-definePageMeta({ middleware: "auth" });
-
 type ParsedProfile = {
     id: string;
     name: string;

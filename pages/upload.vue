@@ -1,6 +1,4 @@
 <script setup lang="ts">
-definePageMeta({ middleware: "auth" });
-
 import { useToast } from "vue-toast-notification";
 
 const toast = useToast({
