@@ -1,11 +1,10 @@
-import getServerSession from "~/server/getServerSession";
 import db from "~/server/db";
 import z from "zod";
 
 export default defineEventHandler(async (e) => {
-    const session = await getServerSession(e);
+    const session = e.context.session;
 
-    if (!session || !session.user) {
+    if (!session) {
         return setResponseStatus(e, 401);
     }
 
@@ -24,7 +23,7 @@ export default defineEventHandler(async (e) => {
 
     return db.comment
         .update({
-            where: { id, authorId: session.user.id },
+            where: { id, authorId: session.data.id },
             data: { content },
         })
         .then(() => setResponseStatus(e, 200))

@@ -1,9 +1,8 @@
 import db from "~/server/db";
-import getServerSession from "~/server/getServerSession";
 import z from "zod";
 
 export default defineEventHandler(async (e) => {
-    const session = await getServerSession(e);
+    const session = e.context.session;
 
     if (session === null) {
         return setResponseStatus(e, 401);

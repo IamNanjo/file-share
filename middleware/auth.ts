@@ -1,6 +1,7 @@
 export default defineNuxtRouteMiddleware(async (to) => {
+    const auth = useAuth();
+
     if (import.meta.client) {
-        const auth = useAuth();
         if (auth.value.authenticated) return;
         return navigateTo("/login");
     }
@@ -8,4 +9,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     const res = await $fetch("/auth");
 
     if (res === null && to.path !== "/login") return await navigateTo("/login");
+    if (res === null) return;
+
+    auth.value = {
+        authenticated: true,
+        id: res.id,
+        name: res.name,
+    };
 });

@@ -3,7 +3,6 @@ import multer from "multer";
 import ffmpeg, { type FfprobeData } from "fluent-ffmpeg";
 
 import db from "~/server/db";
-import getServerSession from "~/server/getServerSession";
 
 const filesPath = process.env.FILESHARE_FILES_PATH;
 const thumbnailsPath = process.env.FILESHARE_THUMBNAILS_PATH;
@@ -32,13 +31,13 @@ function humanReadableFilesize(bytes: number) {
 
 export default defineEventHandler(async (e) => {
     const id = getRouterParam(e, "id");
-    const session = await getServerSession(e);
+    const session = e.context.session;
 
     if (!id) return setResponseStatus(e, 400);
-    if (!session || !session.user) return setResponseStatus(e, 401);
+    if (!session) return setResponseStatus(e, 401);
 
     let upload = await db.file.findFirst({
-        where: { id, ownerId: session.user.id },
+        where: { id, ownerId: session.data.id },
     });
 
     if (!upload) return setResponseStatus(e, 404);
@@ -124,7 +123,7 @@ export default defineEventHandler(async (e) => {
             }
 
             await db.file.update({
-                where: { id, ownerId: session!.user!.id },
+                where: { id, ownerId: session.data.id },
                 data: {
                     type: file.mimetype,
                     size: file.size,
