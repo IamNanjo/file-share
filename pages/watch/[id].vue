@@ -15,7 +15,7 @@ type Comment = {
 };
 
 const route = useRoute();
-const { session } = useAuth();
+const auth = useAuth();
 
 const comments = ref<Comment[]>([]);
 const commentsRef = computed(() => comments);
@@ -61,11 +61,13 @@ function toggleExpand(id: number) {
 }
 
 async function postComment() {
+    if (!auth.value.authenticated) return;
+
     const res = await $fetch("/api/comments", {
         method: "post",
         body: {
             fileId: route.params.id,
-            authorId: session.value?.user?.id,
+            authorId: auth.value.id,
             content: newMessageParentNode.value,
         },
     }).catch(console.error);
@@ -116,7 +118,7 @@ async function postComment() {
                 </NuxtLink>
             </div>
             <form
-                v-if="session && session.user"
+                v-if="auth.authenticated"
                 method="post"
                 action="/api/comments"
                 class="video__comment-form"
@@ -131,11 +133,7 @@ async function postComment() {
                         name="fileId"
                         :value="route.params.id"
                     />
-                    <input
-                        type="hidden"
-                        name="authorId"
-                        :value="session?.user?.id"
-                    />
+                    <input type="hidden" name="authorId" :value="auth.id" />
                     <textarea
                         name="content"
                         placeholder="New comment..."
@@ -224,7 +222,10 @@ async function postComment() {
                                 <p>Copy comment</p>
                             </button>
                             <button
-                                v-if="session?.user?.id === comment.owner.id"
+                                v-if="
+                                    auth.authenticated &&
+                                    auth.id === comment.owner.id
+                                "
                                 @click="
                                     () =>
                                         deleteComment(

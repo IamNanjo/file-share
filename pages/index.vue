@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { session } = useAuth();
+const auth = useAuth();
 
 const { data: files, status } = await useAsyncData(
     async () => {
@@ -119,8 +119,7 @@ const contextMenuOpen = useContextMenu();
                         </button>
                         <button
                             v-if="
-                                session?.user &&
-                                session.user.id === file.owner.id
+                                auth.authenticated && auth.id === file.owner.id
                             "
                             @click.stop.prevent="
                                 (_) => deleteFile(filesRef, index, file.id)
