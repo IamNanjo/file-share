@@ -1,7 +1,6 @@
 import { randomBytes } from "node:crypto";
 import z from "zod";
 
-import getServerSession from "~/server/getServerSession";
 import db from "~/server/db";
 
 const bodySchema = z.object({
@@ -14,17 +13,16 @@ export default defineEventHandler(async (e) => {
     const body = await readValidatedBody(e, (body) =>
         bodySchema.parseAsync(body)
     );
-    const session = await getServerSession(e);
+    const session = e.context.session;
 
-    if (!session || !session.user || !session.user.id)
-        return setResponseStatus(e, 401);
+    if (!session) return setResponseStatus(e, 401);
 
     const fullFileName = randomBytes(7).toString("base64url") + body.extension;
 
     return db.file.create({
         data: {
             id: fullFileName,
-            ownerId: session.user.id,
+            ownerId: session.data.id,
             name: body.name,
             private: body.private,
         },

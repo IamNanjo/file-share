@@ -1,19 +1,22 @@
 import db from "~/server/db";
 
 export default defineEventHandler(async (e) => {
-  const file = await db.file.findUnique({
-    where: { id: e.context.params!.id },
-    include: { owner: true },
-  });
+    if (e.context.session === null) {
+        return setResponseStatus(e, 401);
+    }
+    const file = await db.file.findUnique({
+        where: { id: e.context.params!.id },
+        include: { owner: true },
+    });
 
-  if (!file || !file.type) return setResponseStatus(e, 404);
+    if (!file || !file.type) return setResponseStatus(e, 404);
 
-  const url = getRequestURL(e);
+    const url = getRequestURL(e);
 
-  const fileUrl = `${url.origin}/files/${file.id}`;
+    const fileUrl = `${url.origin}/files/${file.id}`;
 
-  if (file.type.includes("video"))
-    return `<!DOCTYPE html>
+    if (file.type.includes("video"))
+        return `<!DOCTYPE html>
 <html><head>
   <meta property="og:type" content="video.movie" />
   <meta property="og:title" content="${file.name}" />
@@ -34,8 +37,8 @@ export default defineEventHandler(async (e) => {
 </head></html>
 `;
 
-  if (file.type.includes("image"))
-    return `<!DOCTYPE html>
+    if (file.type.includes("image"))
+        return `<!DOCTYPE html>
 <html><head>
 	<meta property="og:title" content="${file.name}" />
 	<meta property="og:image" content="${fileUrl}" />
@@ -46,5 +49,5 @@ export default defineEventHandler(async (e) => {
 </head></html>
 `;
 
-  return sendRedirect(e, `${fileUrl}`);
+    return sendRedirect(e, `${fileUrl}`);
 });
