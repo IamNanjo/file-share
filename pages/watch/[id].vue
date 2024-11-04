@@ -110,10 +110,7 @@ async function postComment() {
                     :external="true"
                     :title="`Download file (${data.sizeString})`"
                 >
-                    <Icon
-                        name="material-symbols:download-rounded"
-                        size="1.25em"
-                    />
+                    <Icon name="material-symbols:download-rounded" />
                     Download
                 </NuxtLink>
             </div>
@@ -151,10 +148,7 @@ async function postComment() {
                                 type="reset"
                                 @click="() => (newMessageParentNode = '')"
                             >
-                                <Icon
-                                    name="material-symbols:close-rounded"
-                                    size="1.25em"
-                                />
+                                <Icon name="material-symbols:close-rounded" />
                                 <span>Cancel</span>
                             </button>
                         </div>
@@ -165,10 +159,7 @@ async function postComment() {
                             class="video__comment-send"
                         >
                             <button>
-                                <Icon
-                                    name="material-symbols:send-rounded"
-                                    size="1.25em"
-                                />
+                                <Icon name="material-symbols:send-rounded" />
                                 <span>Send</span>
                             </button>
                         </div>
@@ -238,7 +229,6 @@ async function postComment() {
                                 <div>
                                     <Icon
                                         name="material-symbols:delete-rounded"
-                                        size="1.25em"
                                     />
                                 </div>
                                 <p>Delete</p>
