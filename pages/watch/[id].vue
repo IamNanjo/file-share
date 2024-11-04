@@ -54,7 +54,10 @@ const { data, status } = useLazyAsyncData(
 const contextMenuOpen = useContextMenu();
 
 const expandedComment = ref<number | null>(null);
-const newMessageParentNode = ref("");
+const newMessageContent = ref("");
+
+const commentEditId = ref<Comment["id"] | null>(null);
+const commentEditContent = ref<Comment["content"]>("");
 
 function toggleExpand(id: number) {
     expandedComment.value = expandedComment.value !== id ? id : null;
@@ -68,7 +71,7 @@ async function postComment() {
         body: {
             fileId: route.params.id,
             authorId: auth.value.id,
-            content: newMessageParentNode.value,
+            content: newMessageContent.value,
         },
     }).catch(console.error);
 
@@ -84,7 +87,31 @@ async function postComment() {
         },
     });
 
-    newMessageParentNode.value = "";
+    newMessageContent.value = "";
+}
+
+function commentEditBegin(id: Comment["id"], oldContent: Comment["content"]) {
+    commentEditId.value = id;
+    commentEditContent.value = oldContent;
+}
+
+function commentEditCancel() {
+    commentEditId.value = null;
+    commentEditContent.value = "";
+}
+
+async function commentEditSubmit(index: number) {
+    if (!commentEditId.value) return;
+
+    comments.value[index].content = commentEditContent.value;
+
+    $fetch(`/api/comments/${commentEditId.value}`, {
+        method: "put",
+        body: { content: commentEditContent.value },
+    });
+
+    commentEditId.value = null;
+    commentEditContent.value = "";
 }
 </script>
 
@@ -123,30 +150,24 @@ async function postComment() {
             >
                 <div
                     class="video__new-comment"
-                    :data-replicated-value="newMessageParentNode"
+                    :data-replicated-value="newMessageContent"
                 >
-                    <input
-                        type="hidden"
-                        name="fileId"
-                        :value="route.params.id"
-                    />
-                    <input type="hidden" name="authorId" :value="auth.id" />
                     <textarea
                         name="content"
                         placeholder="New comment..."
                         rows="1"
-                        v-model="newMessageParentNode"
+                        v-model="newMessageContent"
                     ></textarea>
                 </div>
                 <div class="video__comment-buttons">
                     <Transition>
                         <div
-                            v-if="newMessageParentNode !== ''"
+                            v-if="newMessageContent !== ''"
                             class="video__comment-cancel"
                         >
                             <button
                                 type="reset"
-                                @click="() => (newMessageParentNode = '')"
+                                @click="() => (newMessageContent = '')"
                             >
                                 <Icon name="material-symbols:close-rounded" />
                                 <span>Cancel</span>
@@ -155,7 +176,7 @@ async function postComment() {
                     </Transition>
                     <Transition>
                         <div
-                            v-if="newMessageParentNode !== ''"
+                            v-if="newMessageContent !== ''"
                             class="video__comment-send"
                         >
                             <button>
@@ -188,14 +209,33 @@ async function postComment() {
                     </div>
                     <!-- Automatically displays Show More and Show Less buttons -->
                     <CommentContent
-                        :content="
-                            commentEditId === comment.id
-                                ? commentEditContent
-                                : comment.content
-                        "
+                        v-if="commentEditId !== comment.id"
+                        :content="comment.content"
                         :expanded="expandedComment === comment.id"
                         :toggle-expand="() => toggleExpand(comment.id)"
                     />
+                    <form
+                        v-else
+                        class="video__comment-editor"
+                        @submit.prevent="() => commentEditSubmit(index)"
+                    >
+                        <div
+                            class="video__comment-editor-input"
+                            :data-replicated-value="commentEditContent"
+                        >
+                            <textarea v-model="commentEditContent"></textarea>
+                        </div>
+                        <div class="video__comment-editor-buttons">
+                            <button type="reset" @click="commentEditCancel">
+                                <Icon name="material-symbols:close-rounded" />
+                                <p>Cancel</p>
+                            </button>
+                            <button>
+                                <Icon name="material-symbols:done-rounded" />
+                                <p>Save</p>
+                            </button>
+                        </div>
+                    </form>
                     <Transition>
                         <div
                             v-if="contextMenuOpen === comment.id"
@@ -207,10 +247,29 @@ async function postComment() {
                                 <div>
                                     <Icon
                                         name="material-symbols:content-copy-rounded"
-                                        size="1.25em"
                                     />
                                 </div>
                                 <p>Copy comment</p>
+                            </button>
+                            <button
+                                v-if="
+                                    auth.authenticated &&
+                                    auth.id === comment.owner.id
+                                "
+                                @click="
+                                    () =>
+                                        commentEditBegin(
+                                            comment.id,
+                                            comment.content
+                                        )
+                                "
+                            >
+                                <div>
+                                    <Icon
+                                        name="material-symbols:edit-rounded"
+                                    />
+                                </div>
+                                <p>Edit</p>
                             </button>
                             <button
                                 v-if="
@@ -246,6 +305,7 @@ main {
     justify-content: flex-start;
     align-items: center;
     padding: 2em 1em;
+    padding-bottom: 6em;
 }
 
 .video {
@@ -285,7 +345,6 @@ main {
         gap: 0.5em;
         width: 100%;
         max-width: 60rem;
-        padding-bottom: 2em;
 
         button {
             display: flex;
@@ -306,7 +365,31 @@ main {
         font-size: 1.125rem;
     }
 
-    &__new-comment {
+    &__comment-editor {
+        display: contents;
+        font-size: 1.125rem;
+    }
+
+    &__comment-editor-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1em;
+        width: 100%;
+
+        button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5em;
+            background-color: var(--bg-raise);
+            padding: 0.25em 0.5em;
+            border-radius: 4px;
+        }
+    }
+
+    &__new-comment,
+    &__comment-editor-input {
         display: grid;
         width: 100%;
 
@@ -338,6 +421,7 @@ main {
         gap: 1.5em;
         width: 100%;
         max-width: 60rem;
+        padding-top: 1em;
     }
 
     &__comment {
