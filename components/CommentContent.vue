@@ -1,9 +1,8 @@
 <script setup lang="ts">
 defineProps<{
-    id: number;
     content: string;
-    expandedComment: number | null;
-    toggleExpand: (id: number) => any;
+    expanded: boolean;
+    toggleExpand: () => any;
 }>();
 
 const contentRef = ref<Element | null>(null);
@@ -27,19 +26,14 @@ onMounted(() => {
 <template>
     <div
         ref="contentRef"
-        :class="`video__comment-content ${expandedComment === id ? 'height-auto' : ''}`"
+        :class="`video__comment-content ${expanded ? 'height-auto' : ''}`"
     >
         {{ content }}
     </div>
-    <button
-        v-if="overflowing && expandedComment !== id"
-        @click="() => toggleExpand(id)"
-    >
+    <button v-if="overflowing && expanded" @click="toggleExpand">
         Show More
     </button>
-    <button v-else-if="overflowing" @click="() => toggleExpand(id)">
-        Show Less
-    </button>
+    <button v-else-if="overflowing" @click="toggleExpand">Show Less</button>
 </template>
 
 <style scoped lang="scss">

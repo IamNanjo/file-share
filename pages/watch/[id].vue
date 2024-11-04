@@ -192,18 +192,18 @@ async function postComment() {
                             }}</span>
                         </div>
                         <button @click="openContextMenu(comment.id)">
-                            <Icon
-                                name="material-symbols:more-vert"
-                                size="1.25em"
-                            />
+                            <Icon name="material-symbols:more-vert" />
                         </button>
                     </div>
                     <!-- Automatically displays Show More and Show Less buttons -->
                     <CommentContent
-                        :id="comment.id"
-                        :content="comment.content"
-                        :expanded-comment="expandedComment"
-                        :toggle-expand="toggleExpand"
+                        :content="
+                            commentEditId === comment.id
+                                ? commentEditContent
+                                : comment.content
+                        "
+                        :expanded="expandedComment === comment.id"
+                        :toggle-expand="() => toggleExpand(comment.id)"
                     />
                     <Transition>
                         <div
