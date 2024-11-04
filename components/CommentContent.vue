@@ -30,7 +30,7 @@ onMounted(() => {
     >
         {{ content }}
     </div>
-    <button v-if="overflowing && expanded" @click="toggleExpand">
+    <button v-if="overflowing && !expanded" @click="toggleExpand">
         Show More
     </button>
     <button v-else-if="overflowing" @click="toggleExpand">Show Less</button>
