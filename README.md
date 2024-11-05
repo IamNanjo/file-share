@@ -3,8 +3,7 @@
 ## Description
 
 Allows uploading files to a server.
-The files can be either public or private,
-which will hide them from the file list.
+The files can be either public or private, which will hide them from the file list.
 Files can currently only be deleted by the owner,
 but in the future there will be an admin UI where the admin(s) can delete any files.
 There will also be a configurable maximum file size that the admin can control.
@@ -14,31 +13,40 @@ The website has 3 different themes: light, dark and black (OLED).
 The default foreground accent color is pastel red (#FF6961),
 but can easily be changed in the CSS variables within app.vue
 
-There is also a /watch page for video files,
-which will have a custom video player in a future update,
-but for now just has the default HTML video player.
+There is also a /watch page for video files, and comments can be created for these files.
 
 The links generated after upload are embed links,
 which can be used on social media platforms such as [Discord](https://discord.com/) in order to get a preview,
 which has a video player in it. This has been tested with [Discord](https://discord.com/),
 but should work with other social media sites that support [OG](https://ogp.me/) metadata.
 
-The app has been developed using [Bun](https://bun.sh/),
-and the npm scripts are created for it as well.
-
 ## Screenshots
 
 File list:
 
-![File list](screenshots/file-list.png)
+![File list](./screenshots/file-list.png)
 
 Theme select:
 
-![Theme select](screenshots/theme-select.png)
+![Theme select](./screenshots/theme-select.png)
+
+Login page:
+
+![Login](./screenshots/authentication.png)
 
 Upload page:
 
-![Upload page](screenshots/upload.png)
+![Upload page](./screenshots/pre-upload.png)
+
+![Upload progress](./screenshots/upload-progress.png)
+
+Watch page:
+
+![Watch page](./screenshots/watch-page.png)
+
+Comments on watch page:
+
+![Comments](./screenshots/comments.png)
 
 ## Database
 
