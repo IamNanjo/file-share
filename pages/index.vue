@@ -149,11 +149,10 @@ main {
 }
 
 .file-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-start;
+    --file-width: 20em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--file-width), 1fr));
+    place-items: center;
     gap: 2em;
     width: 100%;
     padding: 1em;
@@ -165,9 +164,9 @@ main {
         justify-content: space-between;
         align-items: center;
         gap: 1em;
-        width: 22em;
+        width: var(--file-width);
         max-width: 100%;
-        height: 18em;
+        height: 17em;
         padding: 1em;
         border-radius: 6px;
 
