@@ -1,11 +1,14 @@
 import db from "~/server/db";
+import z from "zod";
 
 export default defineEventHandler(async (e) => {
-    if (e.context.session === null) {
-        return setResponseStatus(e, 401);
-    }
+    const params = await getValidatedRouterParams(
+        e,
+        z.object({ id: z.string().min(1) }).parse
+    );
+
     const file = await db.file.findUnique({
-        where: { id: e.context.params!.id },
+        where: { id: params.id },
         include: { owner: true },
     });
 
