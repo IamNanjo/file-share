@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const menuIsOpen = useMenuIsOpen();
 const auth = useAuth();
+const route = useRoute();
 
 const toggleMenu = () => {
     menuIsOpen.value = !menuIsOpen.value;
@@ -38,38 +39,35 @@ const toggleMenu = () => {
                 </div>
             </Transition>
         </div>
-        <DropdownMenu>
-            <div class="profile-menu__toggle" tabindex="0" title="Account">
-                <Icon name="material-symbols:account-circle" size="2em" />
-            </div>
+        <NuxtLink
+            v-if="!auth.authenticated && route.path !== '/login'"
+            :href="`/login?redirect=${route.path}`"
+            class="button button-primary"
+            >Sign in</NuxtLink
+        >
+        <DropdownMenu v-else-if="auth.authenticated">
+            <button class="profile-menu__toggle" tabindex="0" title="Account">
+                <span
+                    ><Icon name="material-symbols:account-circle" size="2em" />
+                </span>
+                <span>{{ auth.name }}</span>
+            </button>
             <div class="profile-menu__options">
-                <div v-if="auth.authenticated" class="no-select">
-                    Logged in as {{ auth.name }}
-                </div>
-                <NuxtLink v-if="!auth.authenticated" to="/login">
-                    <Icon name="material-symbols:login-rounded" size="1.5em" />
-                    <div>Log In</div>
-                </NuxtLink>
-                <NuxtLink v-if="auth.authenticated" to="/upload"
+                <NuxtLink to="/upload"
                     ><Icon
                         name="material-symbols:upload-file-rounded"
                         size="1.5em"
                     />
                     <div>Upload</div></NuxtLink
                 >
-                <NuxtLink v-if="auth.authenticated" to="/profile">
+                <NuxtLink to="/profile">
                     <Icon
                         name="material-symbols:manage-accounts-rounded"
                         size="1.5em"
                     />
                     <div>Profile</div>
                 </NuxtLink>
-                <button
-                    v-if="auth.authenticated"
-                    class="clickable"
-                    @click="logOut()"
-                    tabindex="0"
-                >
+                <button class="clickable" @click="logOut()" tabindex="0">
                     <Icon name="material-symbols:logout-rounded" size="1.5em" />
                     <div>Log out</div>
                 </button>
@@ -107,7 +105,6 @@ nav {
     position: fixed;
     bottom: 0;
     display: flex;
-    flex-direction: row-reverse;
     justify-content: space-between;
     align-items: center;
     background-color: var(--bg-primary);
@@ -126,10 +123,6 @@ nav {
         justify-content: space-between;
         align-items: center;
         gap: 1em;
-    }
-
-    .icon {
-        height: 2em;
     }
 
     @media screen and (min-width: 30em) {
