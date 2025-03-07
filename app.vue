@@ -120,6 +120,7 @@ onMounted(() => {
     --fg-primary: 255, 105, 97;
     --text-primary: white;
     --text-alt: #666666;
+    --text-muted: #a6adc8;
     --ff-primary: system-ui, sans-serif;
     --shadow-color: black;
 }
@@ -136,6 +137,7 @@ onMounted(() => {
     --bg-raise-1: #ffffff;
     --text-primary: black;
     --text-alt: #aaaaaa;
+    --text-muted: #181825;
     --shadow-color: #7f7f7f;
 }
 
@@ -203,5 +205,24 @@ button {
 a {
     color: var(--text-primary);
     text-decoration: none;
+}
+
+.button {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5em 1em;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.button-primary {
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
+
+    &:hover,
+    &:focus-visible {
+        background-color: var(--text-muted);
+    }
 }
 </style>
