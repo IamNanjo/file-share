@@ -347,7 +347,8 @@ main {
     max-width: 40em;
     padding: 3em 1em;
 
-    background-image: linear-gradient(90deg, silver 50%, transparent 50%),
+    background-image:
+        linear-gradient(90deg, silver 50%, transparent 50%),
         linear-gradient(90deg, silver 50%, transparent 50%),
         linear-gradient(0deg, silver 50%, transparent 50%),
         linear-gradient(0deg, silver 50%, transparent 50%);
@@ -379,6 +380,7 @@ main {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
         gap: 1em;
         padding-bottom: 2em;
         list-style-type: none;
