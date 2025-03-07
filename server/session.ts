@@ -1,5 +1,4 @@
-import crypto from "node:crypto";
-
+import { sessionSecret } from "~/server/env.mjs";
 import type { H3Event, EventHandlerRequest, SessionConfig } from "h3";
 
 export interface SessionData {
@@ -7,16 +6,12 @@ export interface SessionData {
     name: string;
 }
 
-export const secret =
-    process.env.FILESHARE_SECRET ??
-    crypto.randomBytes(48).toString("base64url");
-
 // 365 day expiration time
 export const expirationTime = 365 * 24 * 60 * 60;
 
 export function getSessionConfig(): SessionConfig {
     return {
-        password: secret,
+        password: sessionSecret,
         maxAge: expirationTime,
         name: "auth",
         cookie: {

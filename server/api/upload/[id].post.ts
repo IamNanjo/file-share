@@ -1,21 +1,9 @@
 import path from "node:path";
 import multer from "multer";
 import ffmpeg, { type FfprobeData } from "fluent-ffmpeg";
+import { filesPath, thumbnailsPath } from "~/server/env.mjs";
 
 import db from "~/server/db";
-
-const filesPath = process.env.FILESHARE_FILES_PATH;
-const thumbnailsPath = process.env.FILESHARE_THUMBNAILS_PATH;
-
-if (!filesPath) {
-    console.error("FILESHARE_FILES_PATH not defined");
-    process.exit(1);
-}
-
-if (!thumbnailsPath) {
-    console.error("FILESHARE_THUMBNAILS_PATH not defined");
-    process.exit(1);
-}
 
 function humanReadableFilesize(bytes: number) {
     const sizes = ["B", "KB", "MB", "GB", "TB"];
