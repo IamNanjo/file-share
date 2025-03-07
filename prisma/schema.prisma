@@ -1,59 +1,59 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+    provider      = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("FILESHARE_DB_URL")
+    provider = "sqlite"
+    url      = env("FILESHARE_DB_URL")
 }
 
 model User {
-  id       String    @id @default(nanoid(10))
-  roleId   Int       @default(1)
-  name     String    @unique
-  password String
-  created  DateTime  @default(now())
-  role     Role      @relation(fields: [roleId], references: [id])
-  files    File[]
-  comments Comment[]
+    id       String    @id @default(nanoid(10))
+    roleId   Int       @default(1)
+    name     String    @unique
+    password String
+    created  DateTime  @default(now())
+    role     Role      @relation(fields: [roleId], references: [id])
+    files    File[]
+    comments Comment[]
 
-  @@index([id, roleId])
+    @@index([id, roleId])
 }
 
 model Role {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  User User[]
+    id   Int    @id @default(autoincrement())
+    name String @unique
+    User User[]
 
-  @@index([id])
+    @@index([id])
 }
 
 model File {
-  id         String    @id @default(nanoid(10))
-  ownerId    String
-  name       String
-  private    Boolean   @default(false)
-  type       String?
-  size       Int       @default(0)
-  sizeString String    @default("0 B")
-  width      Int       @default(0)
-  height     Int       @default(0)
-  created    DateTime  @default(now())
-  owner      User      @relation(fields: [ownerId], references: [id])
-  comments   Comment[]
+    id         String    @id @default(nanoid(10))
+    ownerId    String
+    name       String
+    private    Boolean   @default(false)
+    type       String?
+    size       Int       @default(0)
+    sizeString String    @default("0 B")
+    width      Int       @default(0)
+    height     Int       @default(0)
+    created    DateTime  @default(now())
+    owner      User      @relation(fields: [ownerId], references: [id])
+    comments   Comment[]
 
-  @@index([id, ownerId])
+    @@index([id, ownerId])
 }
 
 model Comment {
-  id       Int      @id @default(autoincrement())
-  authorId String
-  fileId   String
-  content  String
-  created  DateTime @default(now())
-  owner    User     @relation(fields: [authorId], references: [id])
-  file     File     @relation(fields: [fileId], references: [id])
+    id       Int      @id @default(autoincrement())
+    authorId String
+    fileId   String
+    content  String
+    created  DateTime @default(now())
+    owner    User     @relation(fields: [authorId], references: [id])
+    file     File     @relation(fields: [fileId], references: [id])
 
-  @@index([id, authorId, fileId])
+    @@index([id, authorId, fileId])
 }
