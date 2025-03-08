@@ -1,7 +1,11 @@
 import crypto from "node:crypto";
 import { accessSync, constants, mkdirSync } from "node:fs";
 
-let sessionSecret = process.env.FILESHARE_SECRET ?? "";
+// Default to random 64 character secret
+let sessionSecret =
+    process.env.FILESHARE_SECRET ??
+    crypto.randomBytes(48).toString("base64url");
+
 let uploadsPath = process.env.FILESHARE_UPLOADS_PATH ?? "";
 let filesPath = process.env.FILESHARE_FILES_PATH ?? "";
 let thumbnailsPath = process.env.FILESHARE_THUMBNAILS_PATH ?? "";
@@ -15,11 +19,6 @@ function hasReadWriteAccess(filepath) {
         return false;
     }
 }
-
-// Default to random 64 character secret
-sessionSecret =
-    process.env.FILESHARE_SECRET ??
-    crypto.randomBytes(48).toString("base64url");
 
 if (!sessionSecret || sessionSecret.length < 32) {
     console.error("FILESHARE_SECRET must be at least 32 characters long");
