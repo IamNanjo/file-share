@@ -20,6 +20,49 @@ which can be used on social media platforms such as [Discord](https://discord.co
 which has a video player in it. This has been tested with [Discord](https://discord.com/),
 but should work with other social media sites that support [OG](https://ogp.me/) metadata.
 
+## Deployment
+
+In order to deploy this project, you must set the following environment variables.
+For more information see [Configuration](#configuration).
+
+- FILESHARE_DB_URL
+- FILESHARE_UPLOADS_PATH OR
+    - FILESHARE_FILES_PATH
+    - FILESHARE_THUMBNAILS_PATH
+
+```bash
+# Initialize/update database
+npm install --include=dev
+npx prisma migrate dev --name deploy
+npx prisma db seed
+```
+
+### Docker
+
+**You must set `FILESHARE_DB_PATH` and `FILESHARE_DB_NAME` environment variables instead of `FILESHARE_DB_URL`**
+
+The easiest way to deploy this project is using the included [docker compose file](./docker-compose.yml).
+
+```bash
+docker compose up -d
+```
+
+Alternatively you can build your own docker image using the included dockerfile
+
+```bash
+npm install --include=dev
+npm run build
+docker compose up -d --build
+```
+
+### Node
+
+```bash
+npm install --include=dev
+npm run build
+node .output/server/index.mjs
+```
+
 ## Screenshots
 
 File list:
@@ -58,14 +101,16 @@ This app uses Prisma ORM and SQLite 3 as the database
 
 The server configuration is done using the following environment variables:
 
-| Name                      | Example value                                | Description                                                                               |
-| ------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| FILESHARE_PORT            | 8443                                         | The port that the application is hosted on (the reverse proxy should point to this port)  |
-| FILESHARE_BASE_URL        | https://fileshare.example.com                | The public URL for the website                                                            |
-| FILESHARE_DB_URL          | file:/var/www/fileshare/prisma/fileshare.db  | Absolute file URL to the SQLite file                                                      |
-| FILESHARE_FILES_PATH      | /var/www/fileshare/uploads/files             | Absolute file path, which is used as the destination for uploaded files                   |
-| FILESHARE_THUMBNAILS_PATH | /var/www/fileshare/uploads/thumbnails        | Absolute file path, which is used as the destination for the thumbnails of uploaded files |
-| FILESHARE_SECRET          | QhxqJTJ8g3AczeCWMv5hRoIXpuLvSXb+shzNqlw4xr0= | A long random value that is used to encrypt sessions                                      |
+| Name                      | Example value                                | Description                                              |
+| ------------------------- | -------------------------------------------- | -------------------------------------------------------- |
+| FILESHARE_PORT            | 3000                                         | The port that the application is hosted on               |
+| FILESHARE_DB_NAME         | fileshare.db                                 | Filename of SQLite database                              |
+| FILESHARE_DB_URL          | file:/var/www/fileshare/db/fileshare.db      | Absolute file URL to the SQLite file                     |
+| FILESHARE_DB_PATH         | /var/www/fileshare/db                        | Absolute path to database directory                      |
+| FILESHARE_THUMBNAILS_PATH | /var/www/fileshare/uploads/thumbnails        | Absolute path to uploaded thumbnails directory           |
+| FILESHARE_FILES_PATH      | /var/www/fileshare/uploads/files             | Absolute path to uploaded files directory                |
+| FILESHARE_UPLOADS_PATH    | /var/www/fileshare/uploads                   | Absolute path to uploaded files and thumbnails directory |
+| FILESHARE_SECRET          | QhxqJTJ8g3AczeCWMv5hRoIXpuLvSXb+shzNqlw4xr0= | A long random value that is used to encrypt sessions     |
 
 ## Development
 
@@ -82,9 +127,6 @@ npm install
 # pnpm
 pnpm install
 
-# yarn
-yarn install
-
 # bun
 bun install
 ```
@@ -99,9 +141,6 @@ npm run dev
 
 # pnpm
 pnpm run dev
-
-# yarn
-yarn dev
 
 # bun
 bun run dev
@@ -118,9 +157,6 @@ npm run build
 # pnpm
 pnpm run build
 
-# yarn
-yarn build
-
 # bun
 bun run build
 ```
@@ -134,27 +170,18 @@ npm run preview
 # pnpm
 pnpm run preview
 
-# yarn
-yarn preview
-
 # bun
 bun run preview
 ```
 
-Start PM2 for production build:
+Start production build:
 
 ```bash
-# npm
-npm run start
-
-# pnpm
-pnpm run start
-
-# yarn
-yarn start
+# node
+node .output/server/index.mjs
 
 # bun
-bun run start
+bun .output/server/index.mjs
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
