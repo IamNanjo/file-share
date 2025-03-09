@@ -1,0 +1,48 @@
+services:
+  proxy:
+    image: traefik:v3
+    restart: unless-stopped
+    command:
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      # Keep headers intact
+      - "--entryPoints.http.forwardedHeaders.insecure=true"
+    ports:
+      # Use FILESHARE_PORT, else default to 11443
+      - "${FILESHARE_PORT:-11443}:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  app:
+    image: ghcr.io/iamnanjo/fileshare:latest
+    restart: unless-stopped
+    build:
+      context: .
+      labels:
+        - org.opencontainers.image.source=https://github.com/IamNanjo/file-share
+        - org.opencontainers.image.description="Simple way to upload and view files on a server"
+        - org.opencontainers.image.licenses=MIT
+      tags:
+        - "ghcr.io/iamnanjo/fileshare:latest"
+        - "ghcr.io/iamnanjo/fileshare:v2.2.0"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fileshare.entrypoints=web"
+      - "traefik.http.routers.fileshare.rule=PathPrefix(`/`)"
+      - "traefik.http.services.fileshare.loadbalancer.server.port=3000"
+    volumes:
+      - ${FILESHARE_DB_PATH}:/app/db
+      - ${FILESHARE_UPLOADS_PATH}:/app/uploads
+    environment:
+      FILESHARE_SECRET: ${FILESHARE_SECRET}
+      FILESHARE_DB_URL: file:/app/db/${FILESHARE_DB_NAME}
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: any
+        delay: 2s
+        window: 30s
+      rollback_config:
+        monitor: 5s
+        order: start-first
