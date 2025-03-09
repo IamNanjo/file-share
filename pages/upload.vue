@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import { useToast } from "vue-toast-notification";
-
-const toast = useToast({
-    position: "top",
-    duration: 2500,
-    dismissible: true,
-});
-
 const fileEntries = ref<
     {
         id?: string;
@@ -123,7 +115,6 @@ async function handleUpload() {
         });
 
         xhr.addEventListener("error", () => {
-            toast.error("Something went wrong. Please try again");
             uploading.value = false;
         });
 
@@ -139,7 +130,6 @@ async function handleUpload() {
 
 function handleCopyUrl(url: string) {
     navigator.clipboard.writeText(url);
-    toast.success("Link copied!");
 }
 
 function cancelUpload() {

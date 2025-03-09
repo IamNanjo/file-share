@@ -73,10 +73,6 @@ onMounted(() => {
 }
 /* ================ */
 
-/* Toast styles */
-@import "node_modules/vue-toast-notification/dist/theme-bootstrap.css";
-/* ============ */
-
 *,
 *::before,
 *::after {
