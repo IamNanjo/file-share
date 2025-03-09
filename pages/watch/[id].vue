@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import CommentContent from "~/components/CommentContent.vue";
-
 type Comment = {
     id: number;
     content: string;
@@ -22,13 +20,11 @@ const commentsRef = computed(() => comments);
 
 const { data, status } = useLazyAsyncData(
     async () => {
-        const { comments: _comments, ...res } = await $fetch(
-            `/api/watch/${route.params.id}`
-        );
+        const res = await $fetch(`/api/watch/${route.params.id}`);
 
         const date = new Date(res.created);
 
-        comments.value = _comments.map((comment) => {
+        comments.value = res.comments.map((comment) => {
             const date = new Date(comment.created);
 
             return {
@@ -38,6 +34,10 @@ const { data, status } = useLazyAsyncData(
                     absolute: date.toLocaleString(navigator.language),
                 },
             };
+        });
+
+        useTrackPageview({
+            props: { filename: data.value?.name || "Unknown file" },
         });
 
         return {
@@ -136,6 +136,13 @@ async function commentEditSubmit(index: number) {
                     :to="`/files/${route.params.id}`"
                     :external="true"
                     :title="`Download file (${data.sizeString})`"
+                    @click="
+                        () =>
+                            data?.name &&
+                            useTrackEvent('File Download', {
+                                props: { filename: data.name },
+                            })
+                    "
                 >
                     <Icon name="material-symbols:download-rounded" />
                     Download

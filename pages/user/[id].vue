@@ -17,7 +17,7 @@ type ParsedProfile = {
 
 const contextMenuOpen = useContextMenu();
 
-const placeholderProfile = { id: "", name: "", files: [] };
+const placeholderProfile = { id: "", name: "Unknown user", files: [] };
 
 const files = ref<ParsedProfile["files"]>([]);
 const filesRef = computed(() => files);
@@ -27,6 +27,8 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
         const res = await $fetch(`/api/user/${route.params.id}`);
 
         if (res === null) return placeholderProfile;
+
+        useTrackPageview({ props: { user: res.name } });
 
         return {
             ...res,
@@ -58,12 +60,7 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
             <h1>{{ profile.name }}'s files</h1>
         </header>
 
-        <TransitionGroup
-            v-if="status !== 'pending' && profile"
-            class="file-list"
-            name="list"
-            tag="div"
-        >
+        <TransitionGroup class="file-list" name="list" tag="div">
             <NuxtLink
                 v-for="(file, index) in files"
                 :key="file.id"
@@ -116,6 +113,12 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
+                            @click="
+                                () =>
+                                    useTrackEvent('File Download', {
+                                        props: { filename: file.name },
+                                    })
+                            "
                         >
                             <div>
                                 <Icon

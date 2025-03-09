@@ -1,6 +1,13 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
+
     app: { pageTransition: { name: "page", mode: "out-in" } },
+
+    nitro: {
+        experimental: {
+            openAPI: true,
+        },
+    },
 
     modules: [
         "@nuxtjs/color-mode",
@@ -24,7 +31,13 @@ export default defineNuxtConfig({
         display: "swap",
     },
 
-    plausible: { apiHost: "https://plausible.nanjo.dev" },
+    plausible: {
+        apiHost: "https://data.nanjo.dev",
+        ignoredHostnames: ["localhost", "local.test"],
+        logIgnoredEvents: true,
+        autoOutboundTracking: false,
+        autoPageviews: false,
+    },
 
     compatibilityDate: "2024-10-18",
 });

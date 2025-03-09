@@ -49,6 +49,12 @@ const contextMenuOpen = useContextMenu();
                         ? `/watch/${file.id}`
                         : `/embed/${file.id}`
                 "
+                @click.stop="
+                    () =>
+                        useTrackEvent('File View', {
+                            props: { filename: file.name },
+                        })
+                "
             >
                 <div class="file-list__file-thumbnail">
                     <img
@@ -97,7 +103,12 @@ const contextMenuOpen = useContextMenu();
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
-                            @click.stop=""
+                            @click.stop="
+                                () =>
+                                    useTrackEvent('File Download', {
+                                        props: { filename: file.name },
+                                    })
+                            "
                         >
                             <div>
                                 <Icon
