@@ -32,7 +32,7 @@ export default defineEventHandler(async (e) => {
         return { ...user };
     }
 
-    if (!(await bcrypt.compare(password, user.password))) {
+    if (!bcrypt.compareSync(password, user.password)) {
         return setResponseStatus(e, 401, "Incorrect password");
     }
 
