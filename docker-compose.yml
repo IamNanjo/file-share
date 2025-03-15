@@ -13,7 +13,7 @@ services:
         - "ghcr.io/iamnanjo/fileshare:v2.2.0"
     ports:
       # Use FILESHARE_PORT, else default to 11443
-      - "${FILESHARE_PORT:-11443}:80"
+      - "${FILESHARE_PORT:-11443}:3000"
     volumes:
       - ${FILESHARE_DB_PATH}:/app/db
       - ${FILESHARE_UPLOADS_PATH}:/app/uploads
