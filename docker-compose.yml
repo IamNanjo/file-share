@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/iamnanjo/fileshare:latest
+    image: ghcr.io/iamnanjo/fileshare:v2.2.0
     restart: unless-stopped
     build:
       context: .
@@ -11,13 +11,9 @@ services:
       tags:
         - "ghcr.io/iamnanjo/fileshare:latest"
         - "ghcr.io/iamnanjo/fileshare:v2.2.0"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fileshare.entrypoints=web"
-      - "traefik.http.routers.fileshare.rule=PathPrefix(`/`)"
-      - "traefik.http.services.fileshare.loadbalancer.server.port=3000"
     ports:
-      - 11443:3000
+      # Use FILESHARE_PORT, else default to 11443
+      - "${FILESHARE_PORT:-11443}:80"
     volumes:
       - ${FILESHARE_DB_PATH}:/app/db
       - ${FILESHARE_UPLOADS_PATH}:/app/uploads
@@ -25,7 +21,6 @@ services:
       FILESHARE_SECRET: ${FILESHARE_SECRET}
       FILESHARE_DB_URL: file:/app/db/${FILESHARE_DB_NAME}
     deploy:
-      replicas: 4
       restart_policy:
         condition: any
         delay: 2s
