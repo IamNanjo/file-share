@@ -249,8 +249,25 @@ main {
         &-info {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             gap: 0.25em;
             width: 100%;
+        }
+
+        &-visibility {
+            padding: 0.25em 0.5em;
+            border-radius: 4px;
+
+            &:hover {
+                background-color: var(--bg-raise);
+            }
+
+            > * {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 0.25em;
+            }
         }
 
         &-owner {

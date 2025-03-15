@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import type { File } from "~/pages/profile.vue";
 const title = useTitle();
 const menuIsOpen = useMenuIsOpen();
+const fileEditModal = useFileEditModal();
+
+const filename = ref<string | null>(null);
+const fileVisibility = ref<boolean | null>(null);
 
 useHead({
     title,
@@ -27,11 +32,62 @@ onMounted(() => {
         menuIsOpen.value = false;
     });
 });
+
+function updateFile() {
+    if (!fileEditModal.value) return;
+    const { files, index } = fileEditModal.value;
+    const oldFile = fileEditModal.value.files.value[index];
+
+    $fetch(`/api/files/${files.value[index].id}`, {
+        body: {
+            name: filename.value || oldFile.name,
+            private: fileVisibility.value || oldFile.private,
+        } satisfies Partial<File>,
+    });
+}
 </script>
 
 <template>
-    <NuxtLoadingIndicator color="#FF6961" :height="3" />
+    <NuxtLoadingIndicator color="#F38BA8" :height="3" />
     <NavBar />
+    <dialog v-if="fileEditModal !== null" open class="file-edit-modal">
+        <form @submit.prevent="updateFile">
+            <div class="file-edit-modal__form-group">
+                <label for="filename-input" class="file-edit-modal__label"
+                    >File</label
+                >
+                <input
+                    required
+                    id="filename-input"
+                    class="file-edit-modal__input"
+                    type="text"
+                    min="1"
+                    v-model="filename"
+                    :placeholder="
+                        fileEditModal.files.value[fileEditModal.index].name
+                    "
+                />
+            </div>
+            <div class="file-edit-modal__form-group">
+                <label for="filename-input" class="file-edit-modal__label"
+                    >Visibility</label
+                >
+                <!-- <Switch /> -->
+            </div>
+            <div class="file-edit-modal__inline-form-group">
+                <button
+                    class="button"
+                    type="reset"
+                    @click="() => (fileEditModal = null)"
+                >
+                    Cancel
+                </button>
+                <button class="button button-primary" type="submit">
+                    Save
+                </button>
+            </div>
+        </form>
+    </dialog>
     <NuxtPage />
 </template>
 

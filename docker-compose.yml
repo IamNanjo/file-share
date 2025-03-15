@@ -1,19 +1,4 @@
 services:
-  proxy:
-    image: traefik:v3
-    restart: unless-stopped
-    command:
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      # Keep headers intact
-      - "--entryPoints.http.forwardedHeaders.insecure=true"
-    ports:
-      # Use FILESHARE_PORT, else default to 11443
-      - "${FILESHARE_PORT:-11443}:80"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
   app:
     image: ghcr.io/iamnanjo/fileshare:latest
     restart: unless-stopped
@@ -31,6 +16,8 @@ services:
       - "traefik.http.routers.fileshare.entrypoints=web"
       - "traefik.http.routers.fileshare.rule=PathPrefix(`/`)"
       - "traefik.http.services.fileshare.loadbalancer.server.port=3000"
+    ports:
+      - 11443:3000
     volumes:
       - ${FILESHARE_DB_PATH}:/app/db
       - ${FILESHARE_UPLOADS_PATH}:/app/uploads

@@ -1,24 +1,27 @@
 <script setup lang="ts">
+export type File = {
+    id: string;
+    name: string;
+    type: string | null;
+    private: boolean;
+    sizeString: string;
+    created: {
+        relative: string;
+        absolute: string;
+    };
+};
+
 type ParsedProfile = {
     id: string;
     name: string;
-    files: {
-        id: string;
-        name: string;
-        type: string | null;
-        sizeString: string;
-        created: {
-            relative: string;
-            absolute: string;
-        };
-    }[];
+    files: File[];
 };
 
 const contextMenuOpen = useContextMenu();
 
-const placeholderProfile = { id: "", name: "", files: [] };
+const placeholderProfile = { id: "", name: "Unknown user", files: [] };
 
-const files = ref<ParsedProfile["files"]>([]);
+const files = ref<File[]>([]);
 const filesRef = computed(() => files);
 
 const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
@@ -27,11 +30,13 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
 
         if (res === null) return placeholderProfile;
 
+        useTrackPageview({ props: { user: res.name } });
+
         return {
             ...res,
             files: res.files.map((file) => {
                 const date = new Date(file.created);
-                const parsed = {
+                const parsed: File = {
                     ...file,
                     created: {
                         relative: getRelativeTimestamp(date),
@@ -49,6 +54,17 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
         deep: false,
     }
 );
+
+async function toggleFilePublicity(index: number) {
+    const isPrivate = !files.value[index].private;
+    files.value[index].private = isPrivate;
+    await $fetch(`/api/files/${files.value[index].id}`, {
+        method: "PUT",
+        body: {
+            private: isPrivate,
+        } satisfies Partial<File>,
+    });
+}
 </script>
 
 <template>
@@ -72,6 +88,12 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                     file.type && file.type.startsWith('video')
                         ? `/watch/${file.id}`
                         : `/embed/${file.id}`
+                "
+                @click.stop="
+                    () =>
+                        useTrackEvent('File View', {
+                            props: { filename: file.name },
+                        })
                 "
             >
                 <div class="file-list__file-thumbnail">
@@ -100,7 +122,25 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                     </button>
                 </div>
                 <div class="file-list__file-info">
-                    <div></div>
+                    <button
+                        class="file-list__file-visibility"
+                        @click.stop.prevent="() => toggleFilePublicity(index)"
+                    >
+                        <span v-if="file.private">
+                            <Icon
+                                name="material-symbols:visibility-off-rounded"
+                                size="1.25em"
+                            />
+                            Private
+                        </span>
+                        <span v-else>
+                            <Icon
+                                name="material-symbols:visibility-rounded"
+                                size="1.25em"
+                            />
+                            Public
+                        </span>
+                    </button>
                     <p :title="file.created.absolute">
                         {{ file.created.relative }}
                     </p>
@@ -115,6 +155,12 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
+                            @click="
+                                () =>
+                                    useTrackEvent('File Download', {
+                                        props: { file: file.name },
+                                    })
+                            "
                         >
                             <div>
                                 <Icon
