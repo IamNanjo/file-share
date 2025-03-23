@@ -125,6 +125,12 @@ nav {
         gap: 1em;
     }
 
+    .menu > * {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     @media screen and (min-width: 30em) {
         flex-direction: row;
         top: 0;
