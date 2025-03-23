@@ -21,6 +21,7 @@ services:
       FILESHARE_SECRET: ${FILESHARE_SECRET}
       FILESHARE_DB_URL: file:/app/db/${FILESHARE_DB_NAME}
     deploy:
+      replicas: 4
       restart_policy:
         condition: any
         delay: 2s
