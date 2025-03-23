@@ -14,7 +14,7 @@ model User {
     name     String    @unique
     password String
     created  DateTime  @default(now())
-    role     Role      @relation(fields: [roleId], references: [id])
+    role     Role      @relation(fields: [roleId], references: [id], onUpdate: Cascade, onDelete: Restrict)
     files    File[]
     comments Comment[]
 
@@ -40,7 +40,7 @@ model File {
     width      Int       @default(0)
     height     Int       @default(0)
     created    DateTime  @default(now())
-    owner      User      @relation(fields: [ownerId], references: [id])
+    owner      User      @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     comments   Comment[]
 
     @@index([id, ownerId])
@@ -52,8 +52,8 @@ model Comment {
     fileId   String
     content  String
     created  DateTime @default(now())
-    owner    User     @relation(fields: [authorId], references: [id])
-    file     File     @relation(fields: [fileId], references: [id])
+    owner    User     @relation(fields: [authorId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    file     File     @relation(fields: [fileId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 
     @@index([id, authorId, fileId])
 }
