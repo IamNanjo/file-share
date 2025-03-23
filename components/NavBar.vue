@@ -17,10 +17,10 @@ const toggleMenu = () => {
                     to="/"
                     class="menu__back-button"
                     tabindex="0"
-                    title="Back to app"
+                    title="Back to file list"
                     ><Icon
                         name="material-symbols:arrow-back-rounded"
-                        size="2em"
+                        size="1.5em"
                 /></NuxtLink>
             </Transition>
             <button
@@ -48,7 +48,10 @@ const toggleMenu = () => {
         <DropdownMenu v-else-if="auth.authenticated">
             <button class="profile-menu__toggle" tabindex="0" title="Account">
                 <span
-                    ><Icon name="material-symbols:account-circle" size="2em" />
+                    ><Icon
+                        name="material-symbols:account-circle"
+                        size="1.5em"
+                    />
                 </span>
                 <span>{{ auth.name }}</span>
             </button>
@@ -206,23 +209,21 @@ nav {
 }
 
 /* --- Toggle button */
-
 .menu__toggle {
-    --width: 30px;
-    --height: 22px;
+    --width: 1.5em;
+    --height: 1.2em;
+    --bar-size: calc(var(--width) / 8);
+    position: relative;
     width: var(--width);
     height: var(--height);
-    margin: 0;
-    padding: 0;
-    transform: rotate(0deg);
 
     span {
         display: block;
         position: absolute;
-        height: 4px;
+        height: var(--bar-size);
         width: 100%;
         background-color: var(--text-primary);
-        border-radius: 4px;
+        border-radius: var(--bar-size);
         opacity: 1;
         left: 0;
         transform: rotate(0deg);
@@ -234,14 +235,14 @@ nav {
     }
     span:nth-child(2),
     span:nth-child(3) {
-        top: 9px;
+        top: calc(var(--height) / 2 - var(--bar-size) / 2);
     }
     span:nth-child(4) {
-        top: 18px;
+        top: calc(var(--height) - var(--bar-size));
     }
 
     &.open span:nth-child(1) {
-        top: 9px;
+        top: 5px;
         width: 0%;
         left: 50%;
     }
@@ -252,7 +253,7 @@ nav {
         transform: rotate(-45deg);
     }
     &.open span:nth-child(4) {
-        top: 9px;
+        top: 5px;
         width: 0%;
         left: 50%;
     }
@@ -266,7 +267,7 @@ nav {
         align-items: center;
         background-color: var(--bg-raise);
         padding: 0.25em;
-        border-radius: 6px;
+        border-radius: 4px;
         transform: translate(-50%, -50%);
     }
 
