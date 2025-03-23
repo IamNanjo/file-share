@@ -2,6 +2,7 @@ FROM node:lts AS builder
 WORKDIR /app
 COPY . .
 RUN npm install --include=dev
+RUN npx prisma generate
 RUN npm run build
 
 FROM node:lts
