@@ -25,7 +25,7 @@ const toggleMenu = () => {
             </Transition>
             <button
                 :class="`menu__toggle${menuIsOpen ? ' open' : ''}`"
-                @click="toggleMenu"
+                @pointerdown="toggleMenu"
             >
                 <span></span>
                 <span></span>
@@ -35,7 +35,9 @@ const toggleMenu = () => {
             </button>
             <Transition name="menu-content">
                 <div v-if="menuIsOpen" class="menu__content">
-                    <div class="settings"><ThemeSwitch /></div>
+                    <div class="settings">
+                        <div><span>Theme:</span><ThemeSwitch /></div>
+                    </div>
                 </div>
             </Transition>
         </div>
@@ -161,6 +163,16 @@ nav {
         justify-content: space-around;
         gap: 1em;
         padding: 1em;
+
+        > * {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5em;
+            padding: 0.5em 1em;
+            border: 1px solid var(--text-alt);
+            border-radius: 6px;
+        }
     }
 
     > .link-list {
