@@ -50,9 +50,7 @@ docker compose up -d
 Alternatively you can build your own docker image using the included dockerfile
 
 ```bash
-npm install --include=dev
-npm run build
-docker compose up -d --build
+docker compose up -d --build --scale app=1
 ```
 
 ### Node
