@@ -1,28 +1,37 @@
 export default function getRelativeTimestamp(date: Date) {
+    const rtf = new Intl.RelativeTimeFormat(navigator.language, {
+        numeric: "auto",
+        style: "long",
+    });
+
     const now = Date.now();
-    const diffMs = now - date.getTime();
+    const diff = now - date.getTime();
 
-    const diffSec = Math.floor(diffMs / 1000);
-    if (diffSec < 1) return "now";
-    if (diffSec < 60) return `${diffSec} second${diffSec !== 1 ? "s" : ""} ago`;
+    const rawSeconds = diff / 1000;
+    const rawMinutes = rawSeconds / 60;
+    const rawHours = rawMinutes / 60;
+    const rawDays = rawHours / 24;
 
-    const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? "s" : ""} ago`;
+    const seconds = Math.floor(rawSeconds);
+    const minutes = Math.floor(rawMinutes);
+    const hours = Math.floor(rawHours);
+    const days = Math.floor(rawDays);
 
-    const diffHrs = Math.floor(diffMin / 60);
-    if (diffHrs < 24) return `${diffHrs} hour${diffHrs !== 1 ? "s" : ""} ago`;
+    // Approximates
+    const months = Math.floor(rawDays / 30);
+    const years = Math.floor(rawDays / 365);
 
-    const diffDays = Math.floor(diffHrs / 24);
-    if (diffDays <= 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
-
-    const diffWeeks = Math.floor(diffDays / 7);
-    if (diffWeeks <= 4)
-        return `${diffWeeks} week${diffWeeks !== 1 ? "s" : ""} ago`;
-
-    const diffMonths = Math.floor(diffDays / 30.44);
-    if (diffMonths <= 12)
-        return `${diffMonths} month${diffMonths !== 1 ? "s" : ""} ago`;
-
-    const diffYears = Math.floor(diffDays / 365);
-    return `${diffYears} year${diffYears !== 1 ? "s" : ""} ago`;
+    if (seconds < 60) {
+        return rtf.format(-seconds, "seconds");
+    } else if (minutes < 60) {
+        return rtf.format(-minutes, "minutes");
+    } else if (hours < 24) {
+        return rtf.format(-hours, "hours");
+    } else if (days < 28) {
+        return rtf.format(-days, "days");
+    } else if (years < 1) {
+        return rtf.format(-months, "months");
+    } else {
+        return rtf.format(-years, "years");
+    }
 }
