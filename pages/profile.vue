@@ -1,27 +1,16 @@
 <script setup lang="ts">
-export type File = {
-    id: string;
-    name: string;
-    type: string | null;
-    private: boolean;
-    sizeString: string;
-    created: {
-        relative: string;
-        absolute: string;
-    };
-};
-
 type ParsedProfile = {
     id: string;
     name: string;
-    files: File[];
+    files: FileShareFile[];
 };
 
+const auth = useAuth();
 const contextMenuOpen = useContextMenu();
 
 const placeholderProfile = { id: "", name: "Unknown user", files: [] };
 
-const files = ref<File[]>([]);
+const files = ref<FileShareFile[]>([]);
 const filesRef = computed(() => files);
 
 const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
@@ -36,7 +25,7 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
             ...res,
             files: res.files.map((file) => {
                 const date = new Date(file.created);
-                const parsed: File = {
+                const parsed: FileShareFile = {
                     ...file,
                     created: {
                         relative: getRelativeTimestamp(date),
@@ -54,17 +43,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
         deep: false,
     }
 );
-
-async function toggleFilePublicity(index: number) {
-    const isPrivate = !files.value[index].private;
-    files.value[index].private = isPrivate;
-    await $fetch(`/api/files/${files.value[index].id}`, {
-        method: "PUT",
-        body: {
-            private: isPrivate,
-        } satisfies Partial<File>,
-    });
-}
 </script>
 
 <template>
@@ -116,31 +94,15 @@ async function toggleFilePublicity(index: number) {
                         {{ file.name }}
                     </p>
                     <button
-                        @click.stop.prevent="(_) => openContextMenu(file.id)"
+                        @click.stop.prevent="() => openContextMenu(file.id)"
                     >
                         <Icon name="material-symbols:more-vert" size="1.25em" />
                     </button>
                 </div>
                 <div class="file-list__file-info">
-                    <button
-                        class="file-list__file-visibility"
-                        @click.stop.prevent="() => toggleFilePublicity(index)"
-                    >
-                        <span v-if="file.private">
-                            <Icon
-                                name="material-symbols:visibility-off-rounded"
-                                size="1.25em"
-                            />
-                            Private
-                        </span>
-                        <span v-else>
-                            <Icon
-                                name="material-symbols:visibility-rounded"
-                                size="1.25em"
-                            />
-                            Public
-                        </span>
-                    </button>
+                    <p v-if="auth.authenticated" class="file-list__file-owner">
+                        {{ auth.name }}
+                    </p>
                     <p :title="file.created.absolute">
                         {{ file.created.relative }}
                     </p>
@@ -171,7 +133,20 @@ async function toggleFilePublicity(index: number) {
                             <p>Download ({{ file.sizeString }})</p>
                         </NuxtLink>
                         <button
-                            @click.stop.prevent="(_) => copyEmbedLink(file.id)"
+                            @click.stop.prevent="
+                                () => updateFileWithModal(filesRef, index)
+                            "
+                        >
+                            <div>
+                                <Icon
+                                    name="material-symbols:edit-document-rounded"
+                                    size="1.25em"
+                                />
+                            </div>
+                            <p>Edit file</p>
+                        </button>
+                        <button
+                            @click.stop.prevent="() => copyEmbedLink(file.id)"
                         >
                             <div>
                                 <Icon
@@ -183,7 +158,7 @@ async function toggleFilePublicity(index: number) {
                         </button>
                         <button
                             @click.stop.prevent="
-                                (_) => deleteFile(filesRef, index, file.id)
+                                () => deleteFile(filesRef, index, file.id)
                             "
                         >
                             <div>

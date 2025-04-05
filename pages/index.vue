@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const auth = useAuth();
 
-const { data: files, status } = await useAsyncData(
-    async () => {
+const { data: files, status } = await useLazyAsyncData<
+    FileShareFileWithOwner[]
+>(
+    async function () {
         const res = await $fetch("/api/files").catch((err) =>
             console.error(err)
         );
@@ -20,135 +22,174 @@ const { data: files, status } = await useAsyncData(
                 id: file.id,
                 name: file.name,
                 type: file.type,
+                private: file.private,
                 sizeString: file.sizeString,
                 owner: file.owner,
                 created: timestamps,
             };
         });
     },
-    { server: false }
+    { server: false, default: () => [] }
 );
-
 const filesRef = computed(() => files);
 
 const contextMenuOpen = useContextMenu();
 </script>
 
 <template>
-    <main v-if="status !== 'pending'">
-        <TransitionGroup class="file-list" name="list" tag="div">
-            <NuxtLink
-                v-for="(file, index) in files"
-                :key="file.id"
-                class="file-list__file"
-                :external="
-                    file.type && file.type.startsWith('video') ? false : true
-                "
-                :to="
-                    file.type && file.type.startsWith('video')
-                        ? `/watch/${file.id}`
-                        : `/embed/${file.id}`
-                "
-                @click.stop="
-                    () =>
-                        useTrackEvent('File View', {
-                            props: { filename: file.name },
-                        })
-                "
-            >
-                <div class="file-list__file-thumbnail">
-                    <img
-                        v-if="file.type && file.type.startsWith('video')"
-                        :src="`/thumbnails/${file.id}.png`"
-                    />
-                    <img
-                        v-else-if="file.type && file.type.startsWith('image')"
-                        :src="`/files/${file.id}`"
-                    />
-                    <Icon
-                        v-else
-                        name="material-symbols:note-rounded"
-                        size="5em"
-                    />
-                </div>
-                <div class="file-list__file-info">
-                    <p class="file-list__file-name" :title="file.name">
-                        {{ file.name }}
-                    </p>
-                    <button
-                        @click.stop.prevent="(_) => openContextMenu(file.id)"
-                    >
-                        <Icon name="material-symbols:more-vert" size="1.25em" />
-                    </button>
-                </div>
-                <div class="file-list__file-info">
-                    <NuxtLink
-                        class="file-list__file-owner"
-                        :to="`/user/${file.owner.id}`"
-                        :title="`Uploader: ${file.owner.name}`"
-                    >
-                        {{ file.owner.name }}
-                    </NuxtLink>
-                    <p :title="file.created.absolute">
-                        {{ file.created.relative }}
-                    </p>
-                </div>
-                <Transition>
-                    <div
-                        v-if="contextMenuOpen === file.id"
-                        class="file-list__file-menu"
-                    >
-                        <NuxtLink
-                            :download="file.name"
-                            :href="`/files/${file.id}`"
-                            :title="`Download file (${file.sizeString})`"
-                            :external="true"
-                            @click.stop="
-                                () =>
-                                    useTrackEvent('File Download', {
-                                        props: { filename: file.name },
-                                    })
+    <main>
+        <div
+            v-if="status === 'pending' || status === 'idle'"
+            style="padding-block: 2em"
+        >
+            Loading files...
+        </div>
+        <template v-else>
+            <TransitionGroup class="file-list" name="list" tag="div">
+                <NuxtLink
+                    v-for="(file, index) in files"
+                    class="file-list__file"
+                    :key="file.id"
+                    :external="
+                        file.type && file.type.startsWith('video')
+                            ? false
+                            : true
+                    "
+                    :to="
+                        file.type && file.type.startsWith('video')
+                            ? `/watch/${file.id}`
+                            : `/embed/${file.id}`
+                    "
+                    @click.stop="
+                        () =>
+                            useTrackEvent('File View', {
+                                props: { filename: file.name },
+                            })
+                    "
+                >
+                    <div class="file-list__file-thumbnail">
+                        <img
+                            v-if="file.type && file.type.startsWith('video')"
+                            :src="`/thumbnails/${file.id}.png`"
+                        />
+                        <img
+                            v-else-if="
+                                file.type && file.type.startsWith('image')
                             "
-                        >
-                            <div>
-                                <Icon
-                                    name="material-symbols:download-rounded"
-                                    size="1.25em"
-                                />
-                            </div>
-                            <p>Download ({{ file.sizeString }})</p>
-                        </NuxtLink>
+                            :src="`/files/${file.id}`"
+                        />
+                        <Icon
+                            v-else
+                            name="material-symbols:note-rounded"
+                            size="5em"
+                        />
+                    </div>
+                    <div class="file-list__file-info">
+                        <p class="file-list__file-name" :title="file.name">
+                            {{ file.name }}
+                        </p>
                         <button
-                            @click.stop.prevent="(_) => copyEmbedLink(file.id)"
+                            @click.stop.prevent="() => openContextMenu(file.id)"
                         >
-                            <div>
-                                <Icon
-                                    name="material-symbols:content-copy-rounded"
-                                    size="1.25em"
-                                />
-                            </div>
-                            <p>Copy embed link</p>
-                        </button>
-                        <button
-                            v-if="
-                                auth.authenticated && auth.id === file.owner.id
-                            "
-                            @click.stop.prevent="
-                                (_) => deleteFile(filesRef, index, file.id)
-                            "
-                        >
-                            <div>
-                                <Icon
-                                    name="material-symbols:delete-rounded"
-                                    size="1.25em"
-                                />
-                            </div>
-                            <p>Delete file</p>
+                            <Icon
+                                name="material-symbols:more-vert"
+                                size="1.25em"
+                            />
                         </button>
                     </div>
-                </Transition>
-            </NuxtLink>
-        </TransitionGroup>
+                    <div class="file-list__file-info">
+                        <NuxtLink
+                            class="file-list__file-owner"
+                            :to="
+                                auth.authenticated && auth.id === file.owner.id
+                                    ? '/profile'
+                                    : `/user/${file.owner.id}`
+                            "
+                            :title="`Uploader: ${file.owner.name}`"
+                        >
+                            {{ file.owner.name }}
+                        </NuxtLink>
+                        <p :title="file.created.absolute">
+                            {{ file.created.relative }}
+                        </p>
+                    </div>
+                    <Transition>
+                        <div
+                            v-if="contextMenuOpen === file.id"
+                            class="file-list__file-menu"
+                        >
+                            <NuxtLink
+                                :download="file.name"
+                                :href="`/files/${file.id}`"
+                                :title="`Download file (${file.sizeString})`"
+                                :external="true"
+                                @click.stop="
+                                    () =>
+                                        useTrackEvent('File Download', {
+                                            props: { filename: file.name },
+                                        })
+                                "
+                            >
+                                <div>
+                                    <Icon
+                                        name="material-symbols:download-rounded"
+                                        size="1.25em"
+                                    />
+                                </div>
+                                <p>Download ({{ file.sizeString }})</p>
+                            </NuxtLink>
+                            <button
+                                v-if="
+                                    auth.authenticated &&
+                                    auth.id === file.owner.id
+                                "
+                                @click.stop.prevent="
+                                    () => updateFileWithModal(filesRef, index)
+                                "
+                            >
+                                <div>
+                                    <Icon
+                                        name="material-symbols:edit-document-rounded"
+                                        size="1.25em"
+                                    />
+                                </div>
+                                <p>Edit file</p>
+                            </button>
+                            <button
+                                @click.stop.prevent="
+                                    () => copyEmbedLink(file.id)
+                                "
+                            >
+                                <div>
+                                    <Icon
+                                        name="material-symbols:content-copy-rounded"
+                                        size="1.25em"
+                                    />
+                                </div>
+                                <p>Copy embed link</p>
+                            </button>
+                            <button
+                                v-if="
+                                    auth.authenticated &&
+                                    auth.id === file.owner.id
+                                "
+                                @click.stop.prevent="
+                                    () => deleteFile(filesRef, index, file.id)
+                                "
+                            >
+                                <div>
+                                    <Icon
+                                        name="material-symbols:delete-rounded"
+                                        size="1.25em"
+                                    />
+                                </div>
+                                <p>Delete file</p>
+                            </button>
+                        </div>
+                    </Transition>
+                </NuxtLink>
+            </TransitionGroup>
+        </template>
     </main>
 </template>
 
@@ -197,6 +238,10 @@ main {
 
             > * {
                 display: contents;
+
+                &:matches(:hover:not(:active), :active:not(:hover)) > * {
+                    background-color: var(--bg-raise);
+                }
 
                 > * {
                     min-width: max-content;

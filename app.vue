@@ -3,15 +3,17 @@ const title = useTitle();
 const menuIsOpen = useMenuIsOpen();
 const fileEditModal = useFileEditModal();
 
-const filename = ref<string | null>(null);
-const fileVisibility = ref<boolean | null>(null);
-
 useHead({
     title,
     meta: [
         { name: "description", content: "FileShare" },
         { name: "keywords", content: "FileShare, File Share" },
         { name: "author", content: "IamNanjo" },
+        {
+            name: "viewport",
+            content:
+                "width=device-width, initial-scale=1, interactive-widget=resizes-content",
+        },
     ],
 });
 
@@ -19,74 +21,25 @@ onMounted(() => {
     const mainElement = document.querySelector("main");
 
     window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") menuIsOpen.value = !menuIsOpen.value;
+        if (e.key === "Escape" && fileEditModal.value == null)
+            menuIsOpen.value = !menuIsOpen.value;
     });
 
-    mainElement?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        menuIsOpen.value = false;
-    });
-    mainElement?.addEventListener("touchstart", (e) => {
-        e.stopPropagation();
-        menuIsOpen.value = false;
-    });
+    const closeMenuEvents = ["pointerdown", "click"];
+
+    for (const eventName of closeMenuEvents) {
+        mainElement?.addEventListener(eventName, (e) => {
+            e.stopPropagation();
+            menuIsOpen.value = false;
+        });
+    }
 });
-
-function updateFile() {
-    if (!fileEditModal.value) return;
-    const { files, index } = fileEditModal.value;
-    const oldFile = fileEditModal.value.files.value[index];
-
-    $fetch(`/api/files/${files.value[index].id}`, {
-        body: {
-            name: filename.value || oldFile.name,
-            private: fileVisibility.value || oldFile.private,
-        } satisfies Partial<File>,
-    });
-}
 </script>
 
 <template>
     <NuxtLoadingIndicator color="#F38BA8" :height="3" />
     <NavBar />
-    <dialog v-if="fileEditModal !== null" open class="file-edit-modal">
-        <form @submit.prevent="updateFile">
-            <div class="file-edit-modal__form-group">
-                <label for="filename-input" class="file-edit-modal__label"
-                    >File</label
-                >
-                <input
-                    required
-                    id="filename-input"
-                    class="file-edit-modal__input"
-                    type="text"
-                    min="1"
-                    v-model="filename"
-                    :placeholder="
-                        fileEditModal.files.value[fileEditModal.index].name
-                    "
-                />
-            </div>
-            <div class="file-edit-modal__form-group">
-                <label for="filename-input" class="file-edit-modal__label"
-                    >Visibility</label
-                >
-                <!-- <Switch /> -->
-            </div>
-            <div class="file-edit-modal__inline-form-group">
-                <button
-                    class="button"
-                    type="reset"
-                    @click="() => (fileEditModal = null)"
-                >
-                    Cancel
-                </button>
-                <button class="button button-primary" type="submit">
-                    Save
-                </button>
-            </div>
-        </form>
-    </dialog>
+    <FileEditModal />
     <NuxtPage />
 </template>
 
@@ -173,6 +126,7 @@ function updateFile() {
     --text-alt: #666666;
     --text-muted: #a6adc8;
     --ff-primary: system-ui, sans-serif;
+    --ff-mono: monospace;
     --shadow-color: black;
 }
 
@@ -263,6 +217,7 @@ a {
     justify-content: space-around;
     align-items: center;
     padding: 0.5em 1em;
+    border: 1px solid #7f7f7f;
     border-radius: 6px;
     font-weight: 500;
 }
