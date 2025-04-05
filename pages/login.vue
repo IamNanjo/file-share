@@ -63,7 +63,6 @@ onMounted(() => {
                 />
             </div>
             <button type="submit">Log In</button>
-            <Alert :text="error"></Alert>
         </form>
     </main>
 </template>
@@ -96,8 +95,7 @@ main {
         text-align: center;
     }
 
-    > a,
-    > .or {
+    > a {
         color: var(--text-muted);
         width: max-content;
         margin-inline: auto;
