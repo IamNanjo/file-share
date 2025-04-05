@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { File } from "~/pages/profile.vue";
 const title = useTitle();
 const menuIsOpen = useMenuIsOpen();
 const fileEditModal = useFileEditModal();

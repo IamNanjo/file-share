@@ -338,10 +338,10 @@ main {
     padding: 3em 1em;
 
     background-image:
-        linear-gradient(90deg, silver 50%, transparent 50%),
-        linear-gradient(90deg, silver 50%, transparent 50%),
-        linear-gradient(0deg, silver 50%, transparent 50%),
-        linear-gradient(0deg, silver 50%, transparent 50%);
+        linear-gradient(90deg, #7f7f7f 50%, transparent 50%),
+        linear-gradient(90deg, #7f7f7f 50%, transparent 50%),
+        linear-gradient(0deg, #7f7f7f 50%, transparent 50%),
+        linear-gradient(0deg, #7f7f7f 50%, transparent 50%);
     background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
     background-size:
         15px 2px,
@@ -360,6 +360,7 @@ main {
     }
 
     &__text {
+        color: #7f7f7f;
         padding-block: 2em 4em;
         text-align: center;
         font-size: 1.125rem;
