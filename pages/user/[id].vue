@@ -92,13 +92,13 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                         {{ file.name }}
                     </p>
                     <button
-                        @click.stop.prevent="(_) => openContextMenu(file.id)"
+                        @click.stop.prevent="() => openContextMenu(file.id)"
                     >
                         <Icon name="material-symbols:more-vert" size="1.25em" />
                     </button>
                 </div>
                 <div class="file-list__file-info">
-                    <div></div>
+                    <div class="file-list__file-owner">{{ profile.name }}</div>
                     <p :title="file.created.absolute">
                         {{ file.created.relative }}
                     </p>
@@ -129,7 +129,7 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             <p>Download ({{ file.sizeString }})</p>
                         </NuxtLink>
                         <button
-                            @click.stop.prevent="(_) => copyEmbedLink(file.id)"
+                            @click.stop.prevent="() => copyEmbedLink(file.id)"
                         >
                             <div>
                                 <Icon
@@ -141,7 +141,7 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                         </button>
                         <button
                             @click.stop.prevent="
-                                (_) => deleteFile(filesRef, index, file.id)
+                                () => deleteFile(filesRef, index, file.id)
                             "
                         >
                             <div>
