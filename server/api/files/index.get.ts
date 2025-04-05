@@ -7,6 +7,7 @@ export default defineEventHandler(() => {
             id: true,
             name: true,
             type: true,
+            private: true,
             sizeString: true,
             created: true,
             owner: { select: { id: true, name: true } },
