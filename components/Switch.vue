@@ -89,7 +89,6 @@ function calculateOptionWidths() {
     background-color: var(--bg-raise);
     height: 100%;
     border-radius: var(--radius);
-    font-family: var(--ff-mono);
 
     --radius: 0.5em;
 
