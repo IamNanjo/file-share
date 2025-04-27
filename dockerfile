@@ -1,9 +1,9 @@
-FROM node:lts AS base
-RUN corepack enable
-RUN corepack prepare pnpm@latest --activate
-RUN corepack use pnpm@latest
-RUN apt update
-RUN apt install -y ffmpeg
+FROM fedora:latest AS base
+WORKDIR /app
+RUN dnf update -y
+RUN dnf install -y nodejs
+RUN dnf install -y ffmpeg
+RUN npm i -g pnpm@latest
 
 FROM base AS builder
 WORKDIR /app
