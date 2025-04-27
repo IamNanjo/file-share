@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
     devtools: { enabled: true },
+    devServer: { port: Number(process.env.FILESHARE_PORT) || 11443 },
 
     app: { pageTransition: { name: "page", mode: "out-in" } },
 
