@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/iamnanjo/fileshare:v2.2.0
+    image: ghcr.io/iamnanjo/fileshare:v2.3.0
     restart: unless-stopped
     build:
       context: .
@@ -10,7 +10,7 @@ services:
         - org.opencontainers.image.licenses=MIT
       tags:
         - "ghcr.io/iamnanjo/fileshare:latest"
-        - "ghcr.io/iamnanjo/fileshare:v2.2.0"
+        - "ghcr.io/iamnanjo/fileshare:v2.3.0"
     ports:
       # Use FILESHARE_PORT, else default to 11443
       - "${FILESHARE_PORT:-11443}:3000"
