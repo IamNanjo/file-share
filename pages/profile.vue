@@ -77,10 +77,12 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                 <div class="file-list__file-thumbnail">
                     <img
                         v-if="file.type && file.type.startsWith('video')"
+                        loading="lazy"
                         :src="`/thumbnails/${file.id}.png`"
                     />
                     <img
                         v-else-if="file.type && file.type.startsWith('image')"
+                        loading="lazy"
                         :src="`/files/${file.id}`"
                     />
                     <Icon
