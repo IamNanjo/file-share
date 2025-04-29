@@ -126,7 +126,7 @@ onMounted(() => {
     --text-alt: #666666;
     --text-muted: #a6adc8;
     --ff-primary: system-ui, sans-serif;
-    --ff-mono: monospace;
+    --ff-mono: ui-monospace, monospace;
     --shadow-color: black;
 }
 
