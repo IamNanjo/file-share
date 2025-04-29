@@ -8,7 +8,7 @@ RUN npm i -g pnpm@latest
 FROM base AS builder
 WORKDIR /app
 COPY . .
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
