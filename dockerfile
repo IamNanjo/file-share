@@ -1,9 +1,7 @@
 FROM fedora:latest AS base
 WORKDIR /app
 RUN dnf update -y
-RUN dnf install -y nodejs
-RUN dnf install -y ffmpeg
-RUN npm i -g pnpm@latest
+RUN dnf install -y nodejs ffmpeg pnpm
 
 FROM base AS builder
 WORKDIR /app
