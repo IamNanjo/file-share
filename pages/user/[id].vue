@@ -28,8 +28,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
 
         if (res === null) return placeholderProfile;
 
-        useTrackPageview({ props: { user: res.name } });
-
         return {
             ...res,
             files: res.files.map((file) => {
@@ -115,12 +113,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
-                            @click="
-                                () =>
-                                    useTrackEvent('File Download', {
-                                        props: { filename: file.name },
-                                    })
-                            "
                         >
                             <div>
                                 <Icon

@@ -19,8 +19,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
 
         if (res === null) return placeholderProfile;
 
-        useTrackPageview({ props: { user: res.name } });
-
         return {
             ...res,
             files: res.files.map((file) => {
@@ -66,12 +64,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                     file.type && file.type.startsWith('video')
                         ? `/watch/${file.id}`
                         : `/embed/${file.id}`
-                "
-                @click.stop="
-                    () =>
-                        useTrackEvent('File View', {
-                            props: { filename: file.name },
-                        })
                 "
             >
                 <div class="file-list__file-thumbnail">
@@ -119,12 +111,6 @@ const { data: profile, status } = useLazyAsyncData<ParsedProfile>(
                             :href="`/files/${file.id}`"
                             :title="`Download file (${file.sizeString})`"
                             :external="true"
-                            @click="
-                                () =>
-                                    useTrackEvent('File Download', {
-                                        props: { file: file.name },
-                                    })
-                            "
                         >
                             <div>
                                 <Icon

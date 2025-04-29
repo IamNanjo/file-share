@@ -36,10 +36,6 @@ const { data, status } = useLazyAsyncData(
             };
         });
 
-        useTrackPageview({
-            props: { filename: data.value?.name || "Unknown file" },
-        });
-
         return {
             ...res,
             created: {
@@ -136,13 +132,6 @@ async function commentEditSubmit(index: number) {
                     :to="`/files/${route.params.id}`"
                     :external="true"
                     :title="`Download file (${data.sizeString})`"
-                    @click="
-                        () =>
-                            data?.name &&
-                            useTrackEvent('File Download', {
-                                props: { filename: data.name },
-                            })
-                    "
                 >
                     <Icon name="material-symbols:download-rounded" />
                     Download
